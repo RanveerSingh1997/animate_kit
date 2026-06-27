@@ -4,7 +4,8 @@ description: >-
   Respects system reduce-motion. Includes entrance, opacity, surface, and
   skeleton shimmer widgets.
 version: 0.1.0
-publish_to: none # remove this line to publish to pub.dev
+repository: https://github.com/RanveerSingh1997/animate_kit
+issue_tracker: https://github.com/RanveerSingh1997/animate_kit/issues
 
 environment:
   sdk: ^3.9.2
