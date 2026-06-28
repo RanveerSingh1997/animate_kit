@@ -1,3 +1,16 @@
+## 0.3.0
+
+New widgets (all respect `MediaQuery.disableAnimations`):
+
+- `ScaleEntrance`: fade + scale in on mount.
+- `StaggeredList`: column of children with cascading `FadeEntrance` delays.
+- `ScaleToggle`: state-driven scale between `minScale` and `1.0`.
+- `SlideToggle`: state-driven slide between `hiddenOffset` and `Offset.zero`.
+- `PulseAnimation`: repeating scale + fade pulse for attention effects.
+- `ShakeAnimation`: horizontal shake replayed whenever `trigger` changes.
+- `CountUpText`: animates a number to its value; reruns on change.
+- `TypewriterText`: reveals text character by character with optional delay.
+
 ## 0.2.0
 
 - `FadeEntrance`: added `direction` parameter (`FadeSlideDirection` enum —

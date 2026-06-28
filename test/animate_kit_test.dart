@@ -91,6 +91,185 @@ void main() {
     });
   });
 
+  group('ScaleEntrance', () {
+    testWidgets('renders child', (tester) async {
+      await tester.pumpWidget(_wrap(const ScaleEntrance(child: Text('hi'))));
+      await tester.pumpAndSettle();
+      expect(find.text('hi'), findsOneWidget);
+    });
+
+    testWidgets('returns child directly when reduce-motion enabled', (tester) async {
+      await tester.pumpWidget(
+          _wrap(const ScaleEntrance(child: Text('hi')), disableAnimations: true));
+      expect(find.text('hi'), findsOneWidget);
+      // No Animate wrapper when reduce-motion is on.
+      expect(
+        find.descendant(
+            of: find.byType(ScaleEntrance), matching: find.byType(Animate)),
+        findsNothing,
+      );
+    });
+
+    testWidgets('applies fade and scale effects via Animate wrapper',
+        (tester) async {
+      await tester.pumpWidget(_wrap(const ScaleEntrance(child: Text('hi'))));
+      await tester.pump();
+      // flutter_animate's scale() uses Transform.scale (not ScaleTransition).
+      // Verify the Animate wrapper and FadeTransition (from fadeIn) are present.
+      expect(
+        find.descendant(
+            of: find.byType(ScaleEntrance), matching: find.byType(Animate)),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+            of: find.byType(ScaleEntrance), matching: find.byType(FadeTransition)),
+        findsOneWidget,
+      );
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('asserts when initialScale is out of range', (tester) async {
+      expect(
+        () => ScaleEntrance(initialScale: -0.1, child: const SizedBox()),
+        throwsAssertionError,
+      );
+      expect(
+        () => ScaleEntrance(initialScale: 1.1, child: const SizedBox()),
+        throwsAssertionError,
+      );
+    });
+  });
+
+  group('StaggeredList', () {
+    testWidgets('renders all children', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const StaggeredList(children: [Text('a'), Text('b'), Text('c')]),
+      ));
+      await tester.pumpAndSettle();
+      expect(find.text('a'), findsOneWidget);
+      expect(find.text('b'), findsOneWidget);
+      expect(find.text('c'), findsOneWidget);
+    });
+
+    testWidgets('wraps each child in FadeEntrance', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const StaggeredList(children: [Text('a'), Text('b'), Text('c')]),
+      ));
+      expect(find.byType(FadeEntrance), findsNWidgets(3));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('renders empty list without error', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const StaggeredList(children: []),
+      ));
+      await tester.pumpAndSettle();
+      expect(find.byType(StaggeredList), findsOneWidget);
+    });
+  });
+
+  group('ScaleToggle', () {
+    testWidgets('renders child', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const ScaleToggle(scaled: true, child: Text('hi')),
+      ));
+      await tester.pumpAndSettle();
+      expect(find.text('hi'), findsOneWidget);
+    });
+
+    testWidgets('target scale is 1.0 when scaled=true', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const ScaleToggle(scaled: true, child: Text('hi')),
+      ));
+      final widget = tester.widget<AnimatedScale>(
+        find.descendant(
+            of: find.byType(ScaleToggle), matching: find.byType(AnimatedScale)),
+      );
+      expect(widget.scale, closeTo(1.0, 0.001));
+    });
+
+    testWidgets('target scale is minScale when scaled=false', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const ScaleToggle(scaled: false, minScale: 0.8, child: Text('hi')),
+      ));
+      final widget = tester.widget<AnimatedScale>(
+        find.descendant(
+            of: find.byType(ScaleToggle), matching: find.byType(AnimatedScale)),
+      );
+      expect(widget.scale, closeTo(0.8, 0.001));
+    });
+
+    testWidgets('uses Duration.zero when reduce-motion enabled', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const ScaleToggle(scaled: false, child: Text('hi')),
+        disableAnimations: true,
+      ));
+      final widget = tester.widget<AnimatedScale>(
+        find.descendant(
+            of: find.byType(ScaleToggle), matching: find.byType(AnimatedScale)),
+      );
+      expect(widget.duration, Duration.zero);
+    });
+
+    testWidgets('asserts when minScale is out of range', (tester) async {
+      expect(
+        () => ScaleToggle(scaled: true, minScale: 0.0, child: const SizedBox()),
+        throwsAssertionError,
+      );
+      expect(
+        () => ScaleToggle(scaled: true, minScale: 1.1, child: const SizedBox()),
+        throwsAssertionError,
+      );
+    });
+  });
+
+  group('SlideToggle', () {
+    testWidgets('renders child', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const SlideToggle(visible: true, child: Text('hi')),
+      ));
+      await tester.pumpAndSettle();
+      expect(find.text('hi'), findsOneWidget);
+    });
+
+    testWidgets('offset is Offset.zero when visible=true', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const SlideToggle(visible: true, child: Text('hi')),
+      ));
+      final widget = tester.widget<AnimatedSlide>(
+        find.descendant(
+            of: find.byType(SlideToggle), matching: find.byType(AnimatedSlide)),
+      );
+      expect(widget.offset, Offset.zero);
+    });
+
+    testWidgets('offset is hiddenOffset when visible=false', (tester) async {
+      const hidden = Offset(1, 0);
+      await tester.pumpWidget(_wrap(
+        const SlideToggle(
+            visible: false, hiddenOffset: hidden, child: Text('hi')),
+      ));
+      final widget = tester.widget<AnimatedSlide>(
+        find.descendant(
+            of: find.byType(SlideToggle), matching: find.byType(AnimatedSlide)),
+      );
+      expect(widget.offset, hidden);
+    });
+
+    testWidgets('uses Duration.zero when reduce-motion enabled', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const SlideToggle(visible: false, child: Text('hi')),
+        disableAnimations: true,
+      ));
+      final widget = tester.widget<AnimatedSlide>(
+        find.descendant(
+            of: find.byType(SlideToggle), matching: find.byType(AnimatedSlide)),
+      );
+      expect(widget.duration, Duration.zero);
+    });
+  });
+
   group('AnimatedVisibility', () {
     testWidgets('renders child', (tester) async {
       await tester.pumpWidget(_wrap(
@@ -255,6 +434,87 @@ void main() {
     });
   });
 
+  group('PulseAnimation', () {
+    testWidgets('applies Animate wrapper when animations enabled', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const PulseAnimation(child: SizedBox(width: 20, height: 20)),
+      ));
+      expect(
+        find.descendant(
+            of: find.byType(PulseAnimation), matching: find.byType(Animate)),
+        findsOneWidget,
+      );
+      await tester.pump(const Duration(milliseconds: 1000));
+    });
+
+    testWidgets('returns child directly when reduce-motion enabled', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const PulseAnimation(child: Text('live')),
+        disableAnimations: true,
+      ));
+      expect(find.text('live'), findsOneWidget);
+      expect(
+        find.descendant(
+            of: find.byType(PulseAnimation), matching: find.byType(Animate)),
+        findsNothing,
+      );
+    });
+
+    testWidgets('asserts when minScale and minOpacity are out of range', (tester) async {
+      expect(
+        () => PulseAnimation(minScale: 0.0, child: const SizedBox()),
+        throwsAssertionError,
+      );
+      expect(
+        () => PulseAnimation(minOpacity: -0.1, child: const SizedBox()),
+        throwsAssertionError,
+      );
+    });
+  });
+
+  group('ShakeAnimation', () {
+    testWidgets('renders child', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const ShakeAnimation(trigger: 0, child: Text('field')),
+      ));
+      await tester.pumpAndSettle();
+      expect(find.text('field'), findsOneWidget);
+    });
+
+    testWidgets('returns child directly when reduce-motion enabled', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const ShakeAnimation(trigger: 0, child: Text('field')),
+        disableAnimations: true,
+      ));
+      expect(find.text('field'), findsOneWidget);
+      expect(
+        find.descendant(
+            of: find.byType(ShakeAnimation), matching: find.byType(Animate)),
+        findsNothing,
+      );
+    });
+
+    testWidgets('changing trigger replays animation', (tester) async {
+      int trigger = 0;
+      late StateSetter setState;
+      await tester.pumpWidget(StatefulBuilder(builder: (context, s) {
+        setState = s;
+        return _wrap(ShakeAnimation(trigger: trigger, child: const Text('field')));
+      }));
+      await tester.pumpAndSettle();
+      // Change trigger to fire a new shake.
+      setState(() => trigger = 1);
+      await tester.pump();
+      // Animation is running — FadeTransition or Animate is active.
+      expect(
+        find.descendant(
+            of: find.byType(ShakeAnimation), matching: find.byType(Animate)),
+        findsOneWidget,
+      );
+      await tester.pumpAndSettle();
+    });
+  });
+
   group('AnimatedSurface', () {
     testWidgets('renders child', (tester) async {
       await tester.pumpWidget(_wrap(
@@ -336,6 +596,139 @@ void main() {
       ));
       await tester.pumpAndSettle();
       expect(find.byType(AnimatedSurface), findsOneWidget);
+    });
+  });
+
+  group('CountUpText', () {
+    testWidgets('shows final value when reduce-motion enabled', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const CountUpText(value: 42),
+        disableAnimations: true,
+      ));
+      expect(find.text('42'), findsOneWidget);
+    });
+
+    testWidgets('counts up to value over duration', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const CountUpText(value: 100, duration: Duration(milliseconds: 400)),
+      ));
+      // Mid-animation — should show a partial value.
+      await tester.pump(const Duration(milliseconds: 200));
+      final text = tester.widget<Text>(
+        find.descendant(
+            of: find.byType(CountUpText), matching: find.byType(Text)),
+      );
+      final displayed = int.parse(text.data!);
+      expect(displayed, greaterThan(0));
+      expect(displayed, lessThan(100));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('shows full value after animation completes', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const CountUpText(value: 99, duration: Duration(milliseconds: 200)),
+      ));
+      await tester.pumpAndSettle();
+      expect(find.text('99'), findsOneWidget);
+    });
+
+    testWidgets('custom formatter is applied', (tester) async {
+      await tester.pumpWidget(_wrap(
+        CountUpText(
+          value: 5,
+          formatter: (v) => '\$${v.toInt()}',
+        ),
+        disableAnimations: true,
+      ));
+      expect(find.text('\$5'), findsOneWidget);
+    });
+
+    testWidgets('reruns animation when value changes', (tester) async {
+      double val = 10;
+      late StateSetter setState;
+      await tester.pumpWidget(StatefulBuilder(builder: (context, s) {
+        setState = s;
+        return _wrap(CountUpText(value: val));
+      }));
+      await tester.pumpAndSettle();
+      expect(find.text('10'), findsOneWidget);
+      setState(() => val = 50);
+      await tester.pumpAndSettle();
+      expect(find.text('50'), findsOneWidget);
+    });
+  });
+
+  group('TypewriterText', () {
+    testWidgets('shows full text when reduce-motion enabled', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const TypewriterText(text: 'hello'),
+        disableAnimations: true,
+      ));
+      expect(find.text('hello'), findsOneWidget);
+    });
+
+    testWidgets('starts with partial text during animation', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const TypewriterText(
+          text: 'hello world',
+          duration: Duration(milliseconds: 600),
+        ),
+      ));
+      await tester.pump(const Duration(milliseconds: 300)); // halfway
+      final text = tester.widget<Text>(
+        find.descendant(
+            of: find.byType(TypewriterText), matching: find.byType(Text)),
+      );
+      // Should have some characters but not all 11.
+      expect(text.data!.length, greaterThan(0));
+      expect(text.data!.length, lessThan(11));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('shows full text after animation completes', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const TypewriterText(
+          text: 'hi',
+          duration: Duration(milliseconds: 200),
+        ),
+      ));
+      await tester.pumpAndSettle();
+      expect(find.text('hi'), findsOneWidget);
+    });
+
+    testWidgets('restarts when text changes', (tester) async {
+      String txt = 'abc';
+      late StateSetter setState;
+      await tester.pumpWidget(StatefulBuilder(builder: (context, s) {
+        setState = s;
+        return _wrap(TypewriterText(
+          text: txt,
+          duration: const Duration(milliseconds: 200),
+        ));
+      }));
+      await tester.pumpAndSettle();
+      expect(find.text('abc'), findsOneWidget);
+      setState(() => txt = 'xyz');
+      await tester.pumpAndSettle();
+      expect(find.text('xyz'), findsOneWidget);
+    });
+
+    testWidgets('delay defers start', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const TypewriterText(
+          text: 'hi',
+          duration: Duration(milliseconds: 300),
+          delay: Duration(milliseconds: 200),
+        ),
+      ));
+      // During delay window — text should still be empty.
+      await tester.pump(const Duration(milliseconds: 100));
+      final text = tester.widget<Text>(
+        find.descendant(
+            of: find.byType(TypewriterText), matching: find.byType(Text)),
+      );
+      expect(text.data, isEmpty);
+      await tester.pumpAndSettle();
     });
   });
 
