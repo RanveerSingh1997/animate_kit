@@ -1,34 +1,30 @@
 # animate_kit
 
-State-driven Flutter animation primitives built on
-[`flutter_animate`](https://pub.dev/packages/flutter_animate).
-
-Every widget in this package:
-- Is a plain `StatelessWidget` — no controllers, no `initState`
-- Respects `MediaQuery.disableAnimations` (system reduce-motion)
-- Snaps instantly when reduce-motion is on — no need to handle it yourself
+State-driven Flutter animation primitives.
+All widgets respect `MediaQuery.disableAnimations` (system reduce-motion) and
+require no controllers or `initState`.
 
 ## Widgets
 
 | Widget | What it does |
 |---|---|
-| [`FadeEntrance`](#fadeentrance) | Fade + upward-slide entrance animation |
+| [`FadeEntrance`](#fadeentrance) | Fade + configurable-direction slide entrance |
 | [`AnimatedVisibility`](#animatedvisibility) | State-driven opacity between `minOpacity` and `1.0` |
-| [`AnimatedSurface`](#animatedsurface) | State-driven `BoxDecoration` transition |
+| [`AnimatedSurface`](#animatedsurface) | State-driven `Decoration` transition |
 | [`SkeletonBox`](#skeletonbox) | Repeating shimmer for loading placeholders |
 
 ## Installation
 
 ```yaml
 dependencies:
-  animate_kit: ^0.1.0
+  animate_kit: ^0.2.0
 ```
 
 ## Usage
 
 ### FadeEntrance
 
-Animates a widget into view with a fade combined with a subtle upward slide.
+Animates a widget into view with a fade combined with a subtle slide.
 Use it for page-level reveals and section entrances.
 
 ```dart
@@ -36,7 +32,7 @@ import 'package:animate_kit/animate_kit.dart';
 
 FadeEntrance(
   delay: const Duration(milliseconds: 100),
-  duration: const Duration(milliseconds: 500), // default
+  direction: FadeSlideDirection.up, // default
   child: MyCard(),
 )
 ```
@@ -46,6 +42,9 @@ FadeEntrance(
 | `child` | `Widget` | required | Widget to animate |
 | `delay` | `Duration` | `Duration.zero` | Wait before starting |
 | `duration` | `Duration` | `500ms` | Fade + slide duration |
+| `direction` | `FadeSlideDirection` | `up` | Slide direction; `none` for fade-only |
+
+`FadeSlideDirection` values: `up`, `down`, `left`, `right`, `none`.
 
 ---
 
@@ -59,7 +58,7 @@ contextual controls that should remain partially visible when inactive.
 AnimatedVisibility(
   visible: isHovered,
   minOpacity: 0.35,           // default
-  duration: const Duration(milliseconds: 120), // default
+  ignorePointerWhenHidden: true,
   child: ActionButton(),
 )
 ```
@@ -70,13 +69,14 @@ AnimatedVisibility(
 | `visible` | `bool` | required | `true` → full opacity, `false` → `minOpacity` |
 | `minOpacity` | `double` | `0.35` | Opacity when `visible` is false |
 | `duration` | `Duration` | `120ms` | Transition duration |
+| `ignorePointerWhenHidden` | `bool` | `false` | Block hit-testing when `visible` is false |
 
 ---
 
 ### AnimatedSurface
 
-Transitions a `BoxDecoration` smoothly when state changes. Drop-in
-replacement for `AnimatedContainer` when only the decoration needs to animate.
+Transitions a `Decoration` smoothly when state changes. Accepts any
+`Decoration` subtype including `BoxDecoration` and `ShapeDecoration`.
 
 ```dart
 AnimatedSurface(
@@ -93,7 +93,7 @@ AnimatedSurface(
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `decoration` | `BoxDecoration` | required | Target decoration |
+| `decoration` | `Decoration` | required | Target decoration |
 | `child` | `Widget` | required | Child widget |
 | `duration` | `Duration` | `120ms` | Transition duration |
 
@@ -125,6 +125,12 @@ Column(
   ],
 )
 ```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `child` | `Widget` | required | Widget to shimmer |
+| `color` | `Color?` | `surface@65%` | Shimmer highlight color |
+| `duration` | `Duration` | `1500ms` | Duration of one shimmer cycle |
 
 ---
 

@@ -5,6 +5,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 ///
 /// Returns [child] unchanged when [MediaQuery.disableAnimations] is true.
 ///
+/// [color] defaults to [ColorScheme.surface] at 65% opacity. Provide an
+/// explicit value when the child's background differs from the surface color.
+///
 /// ```dart
 /// SkeletonBox(
 ///   child: Container(
@@ -18,19 +21,28 @@ import 'package:flutter_animate/flutter_animate.dart';
 /// )
 /// ```
 class SkeletonBox extends StatelessWidget {
-  const SkeletonBox({required this.child, super.key});
+  const SkeletonBox({
+    required this.child,
+    this.color,
+    this.duration = const Duration(milliseconds: 1500),
+    super.key,
+  });
 
   final Widget child;
+
+  /// Shimmer highlight color. Defaults to [ColorScheme.surface] at 65% opacity.
+  final Color? color;
+
+  /// Duration of one shimmer cycle. Defaults to 1500ms.
+  final Duration duration;
 
   @override
   Widget build(BuildContext context) {
     if (MediaQuery.of(context).disableAnimations) return child;
-    final shimmerColor = Theme.of(context)
-        .colorScheme
-        .surface
-        .withValues(alpha: 0.65);
+    final shimmerColor =
+        color ?? Theme.of(context).colorScheme.surface.withValues(alpha: 0.65);
     return child
         .animate(onPlay: (c) => c.repeat())
-        .shimmer(duration: 1500.ms, color: shimmerColor);
+        .shimmer(duration: duration, color: shimmerColor);
   }
 }

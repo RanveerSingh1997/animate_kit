@@ -1,0 +1,16 @@
+name: animate_kit_example
+description: Demonstrates animate_kit widgets.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  animate_kit:
+    path: ../
+  flutter:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

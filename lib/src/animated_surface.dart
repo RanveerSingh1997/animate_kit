@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 /// State-driven decoration animation — transitions [decoration] over [duration]
 /// using a smooth curve.
 ///
-/// Drop-in replacement for [AnimatedContainer] when only the [BoxDecoration]
-/// needs to animate. Respects [MediaQuery.disableAnimations].
+/// Accepts any [Decoration] subtype, including [BoxDecoration] and
+/// [ShapeDecoration]. Respects [MediaQuery.disableAnimations].
 ///
 /// ```dart
 /// AnimatedSurface(
@@ -23,7 +23,7 @@ class AnimatedSurface extends StatelessWidget {
     super.key,
   });
 
-  final BoxDecoration decoration;
+  final Decoration decoration;
   final Widget child;
   final Duration duration;
 

@@ -4,7 +4,7 @@
 ///
 /// - [FadeEntrance]       — fade + slide-Y entrance animation
 /// - [AnimatedVisibility] — state-driven opacity (visible / minOpacity)
-/// - [AnimatedSurface]    — state-driven BoxDecoration transition
+/// - [AnimatedSurface]    — state-driven Decoration transition
 /// - [SkeletonBox]        — repeating shimmer for loading placeholders
 library animate_kit;
 
