@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 /// State-driven opacity animation — fades [child] between [minOpacity] and
 /// full opacity based on [visible].
@@ -21,7 +20,7 @@ class AnimatedVisibility extends StatelessWidget {
     this.minOpacity = 0.35,
     this.duration = const Duration(milliseconds: 120),
     super.key,
-  });
+  }) : assert(minOpacity >= 0.0 && minOpacity <= 1.0);
 
   final Widget child;
   final bool visible;
@@ -33,15 +32,11 @@ class AnimatedVisibility extends StatelessWidget {
     final reduceMotion = MediaQuery.of(context).disableAnimations;
     final opacity = visible ? 1.0 : minOpacity;
     if (reduceMotion) return Opacity(opacity: opacity, child: child);
-    return child
-        .animate(target: visible ? 1.0 : 0.0)
-        .custom(
-          duration: duration,
-          curve: Curves.easeOut,
-          builder: (_, value, child) => Opacity(
-            opacity: minOpacity + value * (1.0 - minOpacity),
-            child: child,
-          ),
-        );
+    return AnimatedOpacity(
+      opacity: opacity,
+      duration: duration,
+      curve: Curves.easeOut,
+      child: child,
+    );
   }
 }
