@@ -35,6 +35,8 @@ class _DemoPageState extends State<DemoPage> {
   double _score = 0;
   int _errorCount = 0;
   String _typed = 'animate_kit';
+  bool _expanded = false;
+  double _progress = 0.35;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +47,7 @@ class _DemoPageState extends State<DemoPage> {
         padding: const EdgeInsets.all(24),
         children: [
           // ── Entrance animations ────────────────────────────────────────
-          _label('FadeEntrance + ScaleEntrance'),
+          _label('FadeEntrance + ScaleEntrance + RotateEntrance'),
           StaggeredList(
             children: [
               FadeEntrance(
@@ -60,6 +62,10 @@ class _DemoPageState extends State<DemoPage> {
                 delay: const Duration(milliseconds: 240),
                 direction: FadeSlideDirection.left,
                 child: _card(cs.tertiaryContainer, 'FadeEntrance — slides left'),
+              ),
+              RotateEntrance(
+                delay: const Duration(milliseconds: 360),
+                child: _card(cs.primaryContainer, 'RotateEntrance — rotates in'),
               ),
             ],
           ),
@@ -140,6 +146,22 @@ class _DemoPageState extends State<DemoPage> {
           ]),
           const SizedBox(height: 28),
 
+          // ── ExpandableSection ──────────────────────────────────────────
+          _label('ExpandableSection'),
+          FilledButton.tonal(
+            onPressed: () => setState(() => _expanded = !_expanded),
+            child: Text(_expanded ? 'Collapse' : 'Expand'),
+          ),
+          ExpandableSection(
+            expanded: _expanded,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: _card(cs.tertiaryContainer,
+                  'This content expands and collapses smoothly.'),
+            ),
+          ),
+          const SizedBox(height: 28),
+
           // ── PulseAnimation ─────────────────────────────────────────────
           _label('PulseAnimation'),
           Row(children: [
@@ -167,6 +189,17 @@ class _DemoPageState extends State<DemoPage> {
               child: Text('Shake me ($_errorCount)'),
             ),
           ),
+          const SizedBox(height: 28),
+
+          // ── BounceAnimation ────────────────────────────────────────────
+          _label('BounceAnimation'),
+          Row(children: [
+            BounceAnimation(
+              child: Icon(Icons.keyboard_arrow_down, color: cs.primary),
+            ),
+            const SizedBox(width: 12),
+            const Text('Scroll for more'),
+          ]),
           const SizedBox(height: 28),
 
           // ── SkeletonBox ────────────────────────────────────────────────
@@ -245,6 +278,25 @@ class _DemoPageState extends State<DemoPage> {
             duration: const Duration(milliseconds: 800),
             style: Theme.of(context).textTheme.titleLarge,
           ),
+          const SizedBox(height: 28),
+
+          // ── AnimatedProgressRing ───────────────────────────────────────
+          _label('AnimatedProgressRing'),
+          Row(children: [
+            AnimatedProgressRing(
+              value: _progress,
+              child: CountUpText(
+                value: _progress * 100,
+                formatter: (v) => '${v.round()}%',
+              ),
+            ),
+            const SizedBox(width: 16),
+            FilledButton.tonal(
+              onPressed: () =>
+                  setState(() => _progress = (_progress + 0.15) % 1.0),
+              child: const Text('Advance'),
+            ),
+          ]),
           const SizedBox(height: 32),
         ],
       ),

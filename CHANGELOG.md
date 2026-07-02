@@ -1,3 +1,14 @@
+## 0.4.0
+
+New widgets (all respect `MediaQuery.disableAnimations`):
+
+- `RotateEntrance`: fade + rotate in on mount.
+- `ExpandableSection`: state-driven expand/collapse of a child's height,
+  keeping the child mounted (and its state preserved) while collapsed.
+- `BounceAnimation`: repeating vertical bounce for attention effects.
+- `AnimatedProgressRing`: animates a circular progress ring to its value;
+  reruns on change, with an optional centered child (e.g. a percentage label).
+
 ## 0.3.0
 
 New widgets (all respect `MediaQuery.disableAnimations`):

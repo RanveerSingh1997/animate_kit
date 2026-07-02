@@ -12,6 +12,7 @@ require no controllers or `initState`.
 |---|---|
 | [`FadeEntrance`](#fadeentrance) | Fade + configurable-direction slide on mount |
 | [`ScaleEntrance`](#scaleentrance) | Fade + scale in on mount |
+| [`RotateEntrance`](#rotateentrance) | Fade + rotate in on mount |
 | [`StaggeredList`](#staggeredlist) | Column of children with cascading FadeEntrance delays |
 
 ### State-driven
@@ -22,6 +23,7 @@ require no controllers or `initState`.
 | [`AnimatedSurface`](#animatedsurface) | `Decoration` transition |
 | [`ScaleToggle`](#scaletoggle) | Scale between `minScale` and `1.0` |
 | [`SlideToggle`](#slidetoggle) | Slide between an offset and `Offset.zero` |
+| [`ExpandableSection`](#expandablesection) | Expand/collapse a child's height |
 
 ### Repeating / attention
 
@@ -29,20 +31,22 @@ require no controllers or `initState`.
 |---|---|
 | [`PulseAnimation`](#pulseanimation) | Repeating scale + fade pulse |
 | [`ShakeAnimation`](#shakeanimation) | Horizontal shake triggered by a key change |
+| [`BounceAnimation`](#bounceanimation) | Repeating vertical bounce |
 | [`SkeletonBox`](#skeletonbox) | Repeating shimmer for loading placeholders |
 
-### Text
+### Text & values
 
 | Widget | What it does |
 |---|---|
 | [`CountUpText`](#countuptext) | Animates a number from its previous value to a new one |
 | [`TypewriterText`](#typewritertext) | Reveals text character by character |
+| [`AnimatedProgressRing`](#animatedprogressring) | Animates a circular progress ring to its value |
 
 ## Installation
 
 ```yaml
 dependencies:
-  animate_kit: ^0.3.0
+  animate_kit: ^0.4.0
 ```
 
 ## Usage
@@ -84,6 +88,25 @@ ScaleEntrance(
 | `delay` | `Duration` | `Duration.zero` | Wait before starting |
 | `duration` | `Duration` | `400ms` | Fade + scale duration |
 | `initialScale` | `double` | `0.85` | Scale at animation start (`0.0`–`1.0`) |
+
+---
+
+### RotateEntrance
+
+```dart
+RotateEntrance(
+  delay: const Duration(milliseconds: 100),
+  initialTurns: -0.25, // default
+  child: MyIcon(),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `child` | `Widget` | required | Widget to animate |
+| `delay` | `Duration` | `Duration.zero` | Wait before starting |
+| `duration` | `Duration` | `400ms` | Fade + rotate duration |
+| `initialTurns` | `double` | `-0.25` | Rotation at start, in turns (`1.0` = 360°) |
 
 ---
 
@@ -185,6 +208,23 @@ SlideToggle(
 
 ---
 
+### ExpandableSection
+
+```dart
+ExpandableSection(
+  expanded: isOpen,
+  child: FaqAnswer(),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `child` | `Widget` | required | Widget to expand/collapse (stays mounted) |
+| `expanded` | `bool` | required | `true` → natural height, `false` → zero height |
+| `duration` | `Duration` | `250ms` | Transition duration |
+
+---
+
 ### PulseAnimation
 
 ```dart
@@ -219,6 +259,23 @@ ShakeAnimation(
 | `trigger` | `Object` | required | Change this value to replay the shake |
 | `duration` | `Duration` | `500ms` | Duration of one shake |
 | `offset` | `double` | `6.0` | Max horizontal displacement (logical pixels) |
+
+---
+
+### BounceAnimation
+
+```dart
+BounceAnimation(
+  height: 8.0,
+  child: Icon(Icons.keyboard_arrow_down),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `child` | `Widget` | required | Widget to bounce |
+| `height` | `double` | `8.0` | Peak vertical displacement (logical pixels) |
+| `duration` | `Duration` | `600ms` | One full bounce cycle |
 
 ---
 
@@ -281,6 +338,33 @@ TypewriterText(
 
 ---
 
+### AnimatedProgressRing
+
+```dart
+AnimatedProgressRing(
+  value: completedTasks / totalTasks,
+  // CountUpText syncs its own animation to the ring's duration, so the
+  // label and the arc animate together. A plain Text child is also valid
+  // but won't track the ring's in-progress value.
+  child: CountUpText(
+    value: completedTasks / totalTasks * 100,
+    formatter: (v) => '${v.round()}%',
+  ),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `value` | `double` | required | Target progress, `0.0`–`1.0` |
+| `duration` | `Duration` | `600ms` | Animation duration to the new value |
+| `size` | `double` | `48.0` | Ring diameter |
+| `strokeWidth` | `double` | `4.0` | Ring stroke width |
+| `color` | `Color?` | `ColorScheme.primary` | Progress arc color |
+| `backgroundColor` | `Color?` | `ColorScheme.surfaceContainerHighest` | Track color |
+| `child` | `Widget?` | `null` | Optional widget centered inside the ring |
+
+---
+
 ## Reduce-motion behaviour
 
 All widgets check `MediaQuery.of(context).disableAnimations`:
@@ -289,16 +373,20 @@ All widgets check `MediaQuery.of(context).disableAnimations`:
 |---|---|
 | `FadeEntrance` | Returns `child` unchanged |
 | `ScaleEntrance` | Returns `child` unchanged |
+| `RotateEntrance` | Returns `child` unchanged |
 | `StaggeredList` | Each `FadeEntrance` snaps (no animation) |
 | `AnimatedVisibility` | Snaps to target opacity via `Opacity` |
 | `AnimatedSurface` | Uses `Duration.zero` — snaps immediately |
 | `ScaleToggle` | Uses `Duration.zero` — snaps immediately |
 | `SlideToggle` | Uses `Duration.zero` — snaps immediately |
+| `ExpandableSection` | Uses `Duration.zero` — snaps immediately |
 | `PulseAnimation` | Returns `child` unchanged |
 | `ShakeAnimation` | Returns `child` unchanged |
+| `BounceAnimation` | Returns `child` unchanged |
 | `SkeletonBox` | Returns `child` unchanged |
 | `CountUpText` | Shows target value immediately |
 | `TypewriterText` | Shows full text immediately |
+| `AnimatedProgressRing` | Shows target value immediately |
 
 ## License
 

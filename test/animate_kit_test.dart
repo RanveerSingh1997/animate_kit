@@ -141,6 +141,56 @@ void main() {
     });
   });
 
+  group('RotateEntrance', () {
+    testWidgets('renders child', (tester) async {
+      await tester.pumpWidget(_wrap(const RotateEntrance(child: Text('hi'))));
+      await tester.pumpAndSettle();
+      expect(find.text('hi'), findsOneWidget);
+    });
+
+    testWidgets('returns child directly when reduce-motion enabled',
+        (tester) async {
+      await tester.pumpWidget(_wrap(
+          const RotateEntrance(child: Text('hi')),
+          disableAnimations: true));
+      expect(find.text('hi'), findsOneWidget);
+      expect(
+        find.descendant(
+            of: find.byType(RotateEntrance), matching: find.byType(Animate)),
+        findsNothing,
+      );
+    });
+
+    testWidgets('applies fade and rotate effects via Animate wrapper',
+        (tester) async {
+      await tester.pumpWidget(_wrap(const RotateEntrance(child: Text('hi'))));
+      await tester.pump();
+      expect(
+        find.descendant(
+            of: find.byType(RotateEntrance), matching: find.byType(Animate)),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+            of: find.byType(RotateEntrance),
+            matching: find.byType(FadeTransition)),
+        findsOneWidget,
+      );
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('asserts when initialTurns is out of range', (tester) async {
+      expect(
+        () => RotateEntrance(initialTurns: -1.1, child: const SizedBox()),
+        throwsAssertionError,
+      );
+      expect(
+        () => RotateEntrance(initialTurns: 1.1, child: const SizedBox()),
+        throwsAssertionError,
+      );
+    });
+  });
+
   group('StaggeredList', () {
     testWidgets('renders all children', (tester) async {
       await tester.pumpWidget(_wrap(
@@ -267,6 +317,60 @@ void main() {
             of: find.byType(SlideToggle), matching: find.byType(AnimatedSlide)),
       );
       expect(widget.duration, Duration.zero);
+    });
+  });
+
+  group('ExpandableSection', () {
+    testWidgets('renders child when expanded', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const ExpandableSection(expanded: true, child: Text('hi')),
+      ));
+      await tester.pumpAndSettle();
+      expect(find.text('hi'), findsOneWidget);
+    });
+
+    testWidgets('keeps child mounted when collapsed', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const ExpandableSection(expanded: false, child: Text('hi')),
+      ));
+      await tester.pumpAndSettle();
+      // Child stays in the tree (state preserved) even though height is 0.
+      expect(find.text('hi'), findsOneWidget);
+    });
+
+    testWidgets('heightFactor is 1.0 when expanded, 0.0 when collapsed',
+        (tester) async {
+      await tester.pumpWidget(_wrap(
+        const ExpandableSection(expanded: true, child: Text('hi')),
+      ));
+      var align = tester.widget<Align>(
+        find.descendant(
+            of: find.byType(ExpandableSection), matching: find.byType(Align)),
+      );
+      expect(align.heightFactor, 1.0);
+
+      await tester.pumpWidget(_wrap(
+        const ExpandableSection(expanded: false, child: Text('hi')),
+      ));
+      await tester.pumpAndSettle();
+      align = tester.widget<Align>(
+        find.descendant(
+            of: find.byType(ExpandableSection), matching: find.byType(Align)),
+      );
+      expect(align.heightFactor, 0.0);
+    });
+
+    testWidgets('uses Duration.zero when reduce-motion enabled', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const ExpandableSection(expanded: true, child: Text('hi')),
+        disableAnimations: true,
+      ));
+      final size = tester.widget<AnimatedSize>(
+        find.descendant(
+            of: find.byType(ExpandableSection),
+            matching: find.byType(AnimatedSize)),
+      );
+      expect(size.duration, Duration.zero);
     });
   });
 
@@ -512,6 +616,44 @@ void main() {
         findsOneWidget,
       );
       await tester.pumpAndSettle();
+    });
+  });
+
+  group('BounceAnimation', () {
+    testWidgets('applies Animate wrapper when animations enabled', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const BounceAnimation(child: SizedBox(width: 20, height: 20)),
+      ));
+      expect(
+        find.descendant(
+            of: find.byType(BounceAnimation), matching: find.byType(Animate)),
+        findsOneWidget,
+      );
+      await tester.pump(const Duration(milliseconds: 700));
+    });
+
+    testWidgets('returns child directly when reduce-motion enabled', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const BounceAnimation(child: Text('hint')),
+        disableAnimations: true,
+      ));
+      expect(find.text('hint'), findsOneWidget);
+      expect(
+        find.descendant(
+            of: find.byType(BounceAnimation), matching: find.byType(Animate)),
+        findsNothing,
+      );
+    });
+
+    testWidgets('asserts when height is not positive', (tester) async {
+      expect(
+        () => BounceAnimation(height: 0.0, child: const SizedBox()),
+        throwsAssertionError,
+      );
+      expect(
+        () => BounceAnimation(height: -2.0, child: const SizedBox()),
+        throwsAssertionError,
+      );
     });
   });
 
@@ -776,6 +918,75 @@ void main() {
           matching: find.byType(Animate),
         ),
         findsOneWidget,
+      );
+    });
+  });
+
+  group('AnimatedProgressRing', () {
+    testWidgets('renders two CircularProgressIndicators (track + arc)',
+        (tester) async {
+      await tester.pumpWidget(_wrap(
+        const AnimatedProgressRing(value: 0.5),
+        disableAnimations: true,
+      ));
+      expect(
+        find.descendant(
+          of: find.byType(AnimatedProgressRing),
+          matching: find.byType(CircularProgressIndicator),
+        ),
+        findsNWidgets(2),
+      );
+    });
+
+    testWidgets('shows target value immediately when reduce-motion enabled',
+        (tester) async {
+      await tester.pumpWidget(_wrap(
+        const AnimatedProgressRing(value: 0.7),
+        disableAnimations: true,
+      ));
+      final arc = tester.widgetList<CircularProgressIndicator>(
+        find.descendant(
+          of: find.byType(AnimatedProgressRing),
+          matching: find.byType(CircularProgressIndicator),
+        ),
+      ).last;
+      expect(arc.value, closeTo(0.7, 0.001));
+    });
+
+    testWidgets('animates from 0 to value over duration', (tester) async {
+      await tester.pumpWidget(_wrap(
+        const AnimatedProgressRing(
+            value: 1.0, duration: Duration(milliseconds: 400)),
+      ));
+      await tester.pump(const Duration(milliseconds: 200));
+      final arc = tester.widgetList<CircularProgressIndicator>(
+        find.descendant(
+          of: find.byType(AnimatedProgressRing),
+          matching: find.byType(CircularProgressIndicator),
+        ),
+      ).last;
+      expect(arc.value, greaterThan(0.0));
+      expect(arc.value, lessThan(1.0));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('renders optional child centered inside the ring',
+        (tester) async {
+      await tester.pumpWidget(_wrap(
+        const AnimatedProgressRing(value: 0.4, child: Text('40%')),
+        disableAnimations: true,
+      ));
+      expect(find.text('40%'), findsOneWidget);
+    });
+
+    testWidgets('asserts when value is out of range', (tester) async {
+      expect(
+        () => AnimatedProgressRing(value: -0.1),
+        throwsAssertionError,
+      );
+      expect(
+        () => AnimatedProgressRing(value: 1.1),
+        throwsAssertionError,
       );
     });
   });
