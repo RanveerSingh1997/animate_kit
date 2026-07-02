@@ -38,11 +38,15 @@ class SkeletonBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (MediaQuery.of(context).disableAnimations) return child;
+    if (MediaQuery.disableAnimationsOf(context)) return child;
     final shimmerColor =
         color ?? Theme.of(context).colorScheme.surface.withValues(alpha: 0.65);
-    return child
-        .animate(onPlay: (c) => c.repeat())
-        .shimmer(duration: duration, color: shimmerColor);
+    // RepaintBoundary isolates the endlessly repainting shimmer from the
+    // surrounding subtree.
+    return RepaintBoundary(
+      child: child
+          .animate(onPlay: (c) => c.repeat())
+          .shimmer(duration: duration, color: shimmerColor),
+    );
   }
 }

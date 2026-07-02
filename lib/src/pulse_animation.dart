@@ -20,8 +20,8 @@ class PulseAnimation extends StatelessWidget {
     this.minOpacity = 0.6,
     this.duration = const Duration(milliseconds: 900),
     super.key,
-  })  : assert(minScale > 0.0 && minScale <= 1.0),
-        assert(minOpacity >= 0.0 && minOpacity <= 1.0);
+  }) : assert(minScale > 0.0 && minScale <= 1.0),
+       assert(minOpacity >= 0.0 && minOpacity <= 1.0);
 
   final Widget child;
 
@@ -36,20 +36,26 @@ class PulseAnimation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (MediaQuery.of(context).disableAnimations) return child;
-    return child
-        .animate(onPlay: (c) => c.repeat(reverse: true))
-        .scale(
-          begin: const Offset(1, 1),
-          end: Offset(minScale, minScale),
-          duration: duration,
-          curve: Curves.easeInOut,
-        )
-        .fade(
-          begin: 1.0,
-          end: minOpacity,
-          duration: duration,
-          curve: Curves.easeInOut,
-        );
+    if (MediaQuery.disableAnimationsOf(context)) return child;
+    // Clamp defensively: the constructor asserts are stripped in release mode.
+    final scale = minScale.clamp(0.001, 1.0);
+    // RepaintBoundary isolates the endlessly repainting pulse from the
+    // surrounding subtree.
+    return RepaintBoundary(
+      child: child
+          .animate(onPlay: (c) => c.repeat(reverse: true))
+          .scale(
+            begin: const Offset(1, 1),
+            end: Offset(scale, scale),
+            duration: duration,
+            curve: Curves.easeInOut,
+          )
+          .fade(
+            begin: 1.0,
+            end: minOpacity.clamp(0.0, 1.0),
+            duration: duration,
+            curve: Curves.easeInOut,
+          ),
+    );
   }
 }

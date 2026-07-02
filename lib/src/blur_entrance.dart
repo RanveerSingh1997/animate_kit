@@ -1,33 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-/// Animates [child] into view with a fade + rotate entrance.
+/// Animates [child] into view with a fade + blur entrance.
 ///
-/// Rotates from [initialTurns] (a fraction of a full turn) to `0.0` while
+/// Starts blurred at [initialSigma] and sharpens to fully crisp while
 /// simultaneously fading in. Respects [MediaQuery.disableAnimations].
 ///
 /// ```dart
-/// RotateEntrance(
+/// BlurEntrance(
 ///   delay: const Duration(milliseconds: 100),
-///   child: MyIcon(),
+///   child: MyHeroImage(),
 /// )
 /// ```
-class RotateEntrance extends StatelessWidget {
-  const RotateEntrance({
+class BlurEntrance extends StatelessWidget {
+  const BlurEntrance({
     required this.child,
     this.delay = Duration.zero,
-    this.duration = const Duration(milliseconds: 400),
-    this.initialTurns = -0.25,
+    this.duration = const Duration(milliseconds: 500),
+    this.initialSigma = 8.0,
     super.key,
-  }) : assert(initialTurns >= -1.0 && initialTurns <= 1.0);
+  }) : assert(initialSigma > 0.0);
 
   final Widget child;
   final Duration delay;
   final Duration duration;
 
-  /// Rotation at the start of the entrance, in turns (`1.0` = 360°).
-  /// Defaults to `-0.25` (a quarter turn counter-clockwise).
-  final double initialTurns;
+  /// Gaussian blur sigma at the start of the entrance. Defaults to `8`.
+  final double initialSigma;
 
   @override
   Widget build(BuildContext context) {
@@ -35,11 +34,11 @@ class RotateEntrance extends StatelessWidget {
     return child
         .animate(delay: delay)
         .fadeIn(duration: duration, curve: Curves.easeOut)
-        .rotate(
-          begin: initialTurns,
+        .blurXY(
+          begin: initialSigma,
           end: 0,
           duration: duration,
-          curve: Curves.easeOutCubic,
+          curve: Curves.easeOut,
         );
   }
 }

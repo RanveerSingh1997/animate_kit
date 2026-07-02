@@ -49,19 +49,35 @@ class FadeEntrance extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (MediaQuery.of(context).disableAnimations) return child;
+    if (MediaQuery.disableAnimationsOf(context)) return child;
     final animated = child
         .animate(delay: delay)
         .fadeIn(duration: duration, curve: Curves.easeOut);
     return switch (direction) {
       FadeSlideDirection.up => animated.slideY(
-          begin: 0.06, end: 0, duration: duration, curve: Curves.easeOutCubic),
+        begin: 0.06,
+        end: 0,
+        duration: duration,
+        curve: Curves.easeOutCubic,
+      ),
       FadeSlideDirection.down => animated.slideY(
-          begin: -0.06, end: 0, duration: duration, curve: Curves.easeOutCubic),
+        begin: -0.06,
+        end: 0,
+        duration: duration,
+        curve: Curves.easeOutCubic,
+      ),
       FadeSlideDirection.left => animated.slideX(
-          begin: 0.06, end: 0, duration: duration, curve: Curves.easeOutCubic),
+        begin: 0.06,
+        end: 0,
+        duration: duration,
+        curve: Curves.easeOutCubic,
+      ),
       FadeSlideDirection.right => animated.slideX(
-          begin: -0.06, end: 0, duration: duration, curve: Curves.easeOutCubic),
+        begin: -0.06,
+        end: 0,
+        duration: duration,
+        curve: Curves.easeOutCubic,
+      ),
       FadeSlideDirection.none => animated,
     };
   }

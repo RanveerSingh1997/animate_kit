@@ -37,11 +37,12 @@ class ScaleToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final resolvedDuration = MediaQuery.of(context).disableAnimations
+    final resolvedDuration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
         : duration;
     return AnimatedScale(
-      scale: scaled ? 1.0 : minScale,
+      // Clamp defensively: the constructor assert is stripped in release mode.
+      scale: scaled ? 1.0 : minScale.clamp(0.001, 1.0),
       duration: resolvedDuration,
       curve: Curves.easeOut,
       child: child,

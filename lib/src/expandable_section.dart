@@ -34,7 +34,7 @@ class ExpandableSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final resolvedDuration = MediaQuery.of(context).disableAnimations
+    final resolvedDuration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
         : duration;
     return AnimatedSize(

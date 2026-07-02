@@ -37,6 +37,10 @@ class _DemoPageState extends State<DemoPage> {
   String _typed = 'animate_kit';
   bool _expanded = false;
   double _progress = 0.35;
+  bool _blurred = true;
+  bool _showFront = true;
+  int _switcherIndex = 0;
+  int _tapCount = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +70,14 @@ class _DemoPageState extends State<DemoPage> {
               RotateEntrance(
                 delay: const Duration(milliseconds: 360),
                 child: _card(cs.primaryContainer, 'RotateEntrance — rotates in'),
+              ),
+              BlurEntrance(
+                delay: const Duration(milliseconds: 480),
+                child: _card(cs.secondaryContainer, 'BlurEntrance — sharpens in'),
+              ),
+              FlipEntrance(
+                delay: const Duration(milliseconds: 600),
+                child: _card(cs.tertiaryContainer, 'FlipEntrance — flips in'),
               ),
             ],
           ),
@@ -162,6 +174,66 @@ class _DemoPageState extends State<DemoPage> {
           ),
           const SizedBox(height: 28),
 
+          // ── AnimatedBlur + FlipCard ────────────────────────────────────
+          _label('AnimatedBlur + FlipCard'),
+          Row(children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () => setState(() => _blurred = !_blurred),
+                child: AnimatedBlur(
+                  blurred: _blurred,
+                  child: _card(
+                    cs.primaryContainer,
+                    _blurred ? 'Tap to reveal' : 'Spoiler revealed!',
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: GestureDetector(
+                onTap: () => setState(() => _showFront = !_showFront),
+                child: FlipCard(
+                  showFront: _showFront,
+                  front: _card(cs.secondaryContainer, 'Front — tap to flip'),
+                  back: _card(cs.tertiaryContainer, 'Back — tap to flip'),
+                ),
+              ),
+            ),
+          ]),
+          const SizedBox(height: 28),
+
+          // ── FadeSwitcher ───────────────────────────────────────────────
+          _label('FadeSwitcher'),
+          Row(children: [
+            FilledButton.tonal(
+              onPressed: () =>
+                  setState(() => _switcherIndex = (_switcherIndex + 1) % 3),
+              child: const Text('Next'),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: FadeSwitcher(
+                child: _card(
+                  [cs.primaryContainer, cs.secondaryContainer,
+                      cs.tertiaryContainer][_switcherIndex],
+                  'Panel ${_switcherIndex + 1}',
+                  key: ValueKey(_switcherIndex),
+                ),
+              ),
+            ),
+          ]),
+          const SizedBox(height: 28),
+
+          // ── TapScale ───────────────────────────────────────────────────
+          _label('TapScale'),
+          TapScale(
+            onTap: () => setState(() => _tapCount++),
+            child: _card(cs.primary, 'Press me ($_tapCount)',
+                textColor: cs.onPrimary),
+          ),
+          const SizedBox(height: 28),
+
           // ── PulseAnimation ─────────────────────────────────────────────
           _label('PulseAnimation'),
           Row(children: [
@@ -199,6 +271,17 @@ class _DemoPageState extends State<DemoPage> {
             ),
             const SizedBox(width: 12),
             const Text('Scroll for more'),
+          ]),
+          const SizedBox(height: 28),
+
+          // ── SpinAnimation + LoadingDots ────────────────────────────────
+          _label('SpinAnimation + LoadingDots'),
+          Row(children: [
+            SpinAnimation(child: Icon(Icons.sync, color: cs.primary)),
+            const SizedBox(width: 24),
+            LoadingDots(color: cs.primary),
+            const SizedBox(width: 12),
+            const Text('Someone is typing…'),
           ]),
           const SizedBox(height: 28),
 
@@ -281,7 +364,7 @@ class _DemoPageState extends State<DemoPage> {
           const SizedBox(height: 28),
 
           // ── AnimatedProgressRing ───────────────────────────────────────
-          _label('AnimatedProgressRing'),
+          _label('AnimatedProgressRing + AnimatedProgressBar'),
           Row(children: [
             AnimatedProgressRing(
               value: _progress,
@@ -297,6 +380,11 @@ class _DemoPageState extends State<DemoPage> {
               child: const Text('Advance'),
             ),
           ]),
+          const SizedBox(height: 16),
+          AnimatedProgressBar(
+            value: _progress,
+            semanticsLabel: 'Demo progress',
+          ),
           const SizedBox(height: 32),
         ],
       ),
@@ -314,7 +402,9 @@ class _DemoPageState extends State<DemoPage> {
         ),
       );
 
-  Widget _card(Color color, String label, {Color? textColor}) => Container(
+  Widget _card(Color color, String label, {Color? textColor, Key? key}) =>
+      Container(
+        key: key,
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(

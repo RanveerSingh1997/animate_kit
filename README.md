@@ -13,6 +13,8 @@ require no controllers or `initState`.
 | [`FadeEntrance`](#fadeentrance) | Fade + configurable-direction slide on mount |
 | [`ScaleEntrance`](#scaleentrance) | Fade + scale in on mount |
 | [`RotateEntrance`](#rotateentrance) | Fade + rotate in on mount |
+| [`BlurEntrance`](#blurentrance) | Fade + blur-to-sharp on mount |
+| [`FlipEntrance`](#flipentrance) | Fade + 3D flip in on mount |
 | [`StaggeredList`](#staggeredlist) | Column of children with cascading FadeEntrance delays |
 
 ### State-driven
@@ -24,6 +26,15 @@ require no controllers or `initState`.
 | [`ScaleToggle`](#scaletoggle) | Scale between `minScale` and `1.0` |
 | [`SlideToggle`](#slidetoggle) | Slide between an offset and `Offset.zero` |
 | [`ExpandableSection`](#expandablesection) | Expand/collapse a child's height |
+| [`AnimatedBlur`](#animatedblur) | Blur between `0` and `sigma` |
+| [`FlipCard`](#flipcard) | 3D flip between a front and back face |
+| [`FadeSwitcher`](#fadeswitcher) | Cross-fade + scale between changing children |
+
+### Interaction
+
+| Widget | What it does |
+|---|---|
+| [`TapScale`](#tapscale) | Press-down scale feedback |
 
 ### Repeating / attention
 
@@ -32,6 +43,8 @@ require no controllers or `initState`.
 | [`PulseAnimation`](#pulseanimation) | Repeating scale + fade pulse |
 | [`ShakeAnimation`](#shakeanimation) | Horizontal shake triggered by a key change |
 | [`BounceAnimation`](#bounceanimation) | Repeating vertical bounce |
+| [`SpinAnimation`](#spinanimation) | Repeating continuous rotation |
+| [`LoadingDots`](#loadingdots) | Staggered typing-indicator dots |
 | [`SkeletonBox`](#skeletonbox) | Repeating shimmer for loading placeholders |
 
 ### Text & values
@@ -41,12 +54,13 @@ require no controllers or `initState`.
 | [`CountUpText`](#countuptext) | Animates a number from its previous value to a new one |
 | [`TypewriterText`](#typewritertext) | Reveals text character by character |
 | [`AnimatedProgressRing`](#animatedprogressring) | Animates a circular progress ring to its value |
+| [`AnimatedProgressBar`](#animatedprogressbar) | Animates a linear progress bar to its value |
 
 ## Installation
 
 ```yaml
 dependencies:
-  animate_kit: ^0.4.0
+  animate_kit: ^0.6.0
 ```
 
 ## Usage
@@ -107,6 +121,43 @@ RotateEntrance(
 | `delay` | `Duration` | `Duration.zero` | Wait before starting |
 | `duration` | `Duration` | `400ms` | Fade + rotate duration |
 | `initialTurns` | `double` | `-0.25` | Rotation at start, in turns (`1.0` = 360°) |
+
+---
+
+### BlurEntrance
+
+```dart
+BlurEntrance(
+  initialSigma: 8.0, // default
+  child: MyHeroImage(),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `child` | `Widget` | required | Widget to animate |
+| `delay` | `Duration` | `Duration.zero` | Wait before starting |
+| `duration` | `Duration` | `500ms` | Fade + blur duration |
+| `initialSigma` | `double` | `8.0` | Gaussian blur sigma at animation start |
+
+---
+
+### FlipEntrance
+
+```dart
+FlipEntrance(
+  axis: FlipAxis.horizontal, // default
+  child: MyCard(),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `child` | `Widget` | required | Widget to animate |
+| `delay` | `Duration` | `Duration.zero` | Wait before starting |
+| `duration` | `Duration` | `500ms` | Fade + flip duration |
+| `axis` | `FlipAxis` | `horizontal` | Axis the child flips around |
+| `initialTilt` | `double` | `-0.5` | Start tilt, fraction of a half turn |
 
 ---
 
@@ -225,6 +276,83 @@ ExpandableSection(
 
 ---
 
+### AnimatedBlur
+
+```dart
+AnimatedBlur(
+  blurred: !isRevealed,
+  sigma: 8.0, // default
+  child: SpoilerImage(),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `child` | `Widget` | required | Widget to blur |
+| `blurred` | `bool` | required | `true` → blurred at `sigma`, `false` → crisp |
+| `sigma` | `double` | `8.0` | Gaussian blur sigma when blurred |
+| `duration` | `Duration` | `250ms` | Transition duration |
+
+---
+
+### FlipCard
+
+```dart
+FlipCard(
+  showFront: !isRevealed,
+  front: CardBack(),
+  back: CardFace(),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `front` | `Widget` | required | Face shown when `showFront` is true |
+| `back` | `Widget` | required | Face shown when `showFront` is false |
+| `showFront` | `bool` | required | Which face is visible; toggling animates a flip |
+| `duration` | `Duration` | `400ms` | Flip duration |
+| `axis` | `Axis` | `horizontal` | `horizontal` = left-right turn, `vertical` = top-bottom |
+
+---
+
+### FadeSwitcher
+
+```dart
+FadeSwitcher(
+  child: isLoading
+      ? const Spinner(key: ValueKey('loading'))
+      : Content(key: const ValueKey('content')),
+)
+```
+
+Give each distinct child a unique `Key` (same rule as `AnimatedSwitcher`).
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `child` | `Widget` | required | Current child; changing it animates the swap |
+| `duration` | `Duration` | `250ms` | Cross-fade duration |
+| `initialScale` | `double` | `0.95` | Incoming child's start scale; `1.0` for pure fade |
+
+---
+
+### TapScale
+
+```dart
+TapScale(
+  onTap: submit,
+  child: MyButton(),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `child` | `Widget` | required | Widget to wrap |
+| `onTap` | `VoidCallback?` | `null` | Tap handler |
+| `pressedScale` | `double` | `0.95` | Scale while a pointer is down |
+| `duration` | `Duration` | `100ms` | Press/release transition duration |
+
+---
+
 ### PulseAnimation
 
 ```dart
@@ -276,6 +404,40 @@ BounceAnimation(
 | `child` | `Widget` | required | Widget to bounce |
 | `height` | `double` | `8.0` | Peak vertical displacement (logical pixels) |
 | `duration` | `Duration` | `600ms` | One full bounce cycle |
+
+---
+
+### SpinAnimation
+
+```dart
+SpinAnimation(
+  child: Icon(Icons.sync),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `child` | `Widget` | required | Widget to rotate |
+| `duration` | `Duration` | `1200ms` | One full rotation |
+| `clockwise` | `bool` | `true` | Rotation direction |
+
+---
+
+### LoadingDots
+
+```dart
+LoadingDots(
+  color: Theme.of(context).colorScheme.primary,
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `dotCount` | `int` | `3` | Number of dots |
+| `dotSize` | `double` | `8.0` | Diameter of each dot |
+| `spacing` | `double` | `4.0` | Gap between dots |
+| `color` | `Color?` | `onSurfaceVariant` | Dot color |
+| `duration` | `Duration` | `900ms` | One full wave cycle |
 
 ---
 
@@ -365,6 +527,44 @@ AnimatedProgressRing(
 
 ---
 
+### AnimatedProgressBar
+
+```dart
+AnimatedProgressBar(
+  value: downloaded / total,
+  semanticsLabel: 'Download progress',
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `value` | `double` | required | Target progress, `0.0`–`1.0` |
+| `duration` | `Duration` | `600ms` | Animation duration to the new value |
+| `height` | `double` | `8.0` | Bar height |
+| `color` | `Color?` | `ColorScheme.primary` | Fill color |
+| `backgroundColor` | `Color?` | `ColorScheme.surfaceContainerHighest` | Track color |
+| `borderRadius` | `BorderRadiusGeometry?` | stadium (`height / 2`) | Corner radius |
+| `semanticsLabel` | `String?` | `null` | Screen-reader label for the progress value |
+
+---
+
+## Accessibility & performance
+
+- **Screen readers**: `CountUpText` and `TypewriterText` announce only the
+  final value / full text — never each animation frame. `AnimatedProgressRing`
+  exposes a single progress value (e.g. "70%") plus an optional
+  `semanticsLabel`.
+- **Grapheme-safe**: `TypewriterText` reveals by grapheme cluster, so emoji
+  and combining characters are never split mid-glyph.
+- **Repaint isolation**: repeating animations (`PulseAnimation`,
+  `BounceAnimation`, `SkeletonBox`) are wrapped in a `RepaintBoundary` so
+  their per-frame repaints don't spill into the surrounding subtree.
+- **Efficient rebuilds**: widgets subscribe only to the `disableAnimations`
+  MediaQuery aspect — keyboard, resize, and padding changes don't trigger
+  rebuilds.
+- **No idle tickers**: when reduce-motion is enabled, internal animation
+  controllers never run.
+
 ## Reduce-motion behaviour
 
 All widgets check `MediaQuery.of(context).disableAnimations`:
@@ -374,19 +574,28 @@ All widgets check `MediaQuery.of(context).disableAnimations`:
 | `FadeEntrance` | Returns `child` unchanged |
 | `ScaleEntrance` | Returns `child` unchanged |
 | `RotateEntrance` | Returns `child` unchanged |
+| `BlurEntrance` | Returns `child` unchanged |
+| `FlipEntrance` | Returns `child` unchanged |
 | `StaggeredList` | Each `FadeEntrance` snaps (no animation) |
 | `AnimatedVisibility` | Snaps to target opacity via `Opacity` |
 | `AnimatedSurface` | Uses `Duration.zero` — snaps immediately |
 | `ScaleToggle` | Uses `Duration.zero` — snaps immediately |
 | `SlideToggle` | Uses `Duration.zero` — snaps immediately |
 | `ExpandableSection` | Uses `Duration.zero` — snaps immediately |
+| `AnimatedBlur` | Uses `Duration.zero` — snaps immediately |
+| `FlipCard` | Swaps faces instantly |
+| `FadeSwitcher` | Uses `Duration.zero` — swaps instantly |
+| `TapScale` | Uses `Duration.zero` — snaps immediately |
 | `PulseAnimation` | Returns `child` unchanged |
 | `ShakeAnimation` | Returns `child` unchanged |
 | `BounceAnimation` | Returns `child` unchanged |
+| `SpinAnimation` | Returns `child` unchanged |
+| `LoadingDots` | Renders static dots (no ticker) |
 | `SkeletonBox` | Returns `child` unchanged |
 | `CountUpText` | Shows target value immediately |
 | `TypewriterText` | Shows full text immediately |
 | `AnimatedProgressRing` | Shows target value immediately |
+| `AnimatedProgressBar` | Shows target value immediately |
 
 ## License
 

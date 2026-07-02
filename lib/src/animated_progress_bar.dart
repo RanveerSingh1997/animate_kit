@@ -1,67 +1,60 @@
 import 'package:flutter/material.dart';
 
-/// Animates a circular progress ring from its previous [value] (or `0` on
+/// Animates a linear progress bar from its previous [value] (or `0` on
 /// first mount) to the new target whenever [value] changes.
+///
+/// The linear counterpart of [AnimatedProgressRing].
 ///
 /// Respects [MediaQuery.disableAnimations] — snaps to [value] immediately
 /// when reduce-motion is enabled, and the internal ticker never runs.
 ///
 /// Screen readers announce a single progress value (e.g. "70%") instead of
-/// one announcement per stacked indicator or per animation frame.
+/// per-frame values.
 ///
 /// ```dart
-/// AnimatedProgressRing(
-///   value: completedTasks / totalTasks,
-///   child: Text('${(progress * 100).round()}%'),
+/// AnimatedProgressBar(
+///   value: downloaded / total,
 /// )
 /// ```
-class AnimatedProgressRing extends StatefulWidget {
-  const AnimatedProgressRing({
+class AnimatedProgressBar extends StatefulWidget {
+  const AnimatedProgressBar({
     required this.value,
     this.duration = const Duration(milliseconds: 600),
-    this.size = 48.0,
-    this.strokeWidth = 4.0,
+    this.height = 8.0,
     this.color,
     this.backgroundColor,
+    this.borderRadius,
     this.semanticsLabel,
-    this.child,
     super.key,
-  }) : assert(value >= 0.0 && value <= 1.0);
+  }) : assert(value >= 0.0 && value <= 1.0),
+       assert(height > 0.0);
 
   /// Target progress, from `0.0` to `1.0`.
   final double value;
 
   final Duration duration;
 
-  /// Diameter of the ring. Defaults to `48`.
-  final double size;
+  /// Bar height. Defaults to `8`.
+  final double height;
 
-  /// Ring stroke width. Defaults to `4`.
-  final double strokeWidth;
-
-  /// Color of the progress arc. Defaults to [ColorScheme.primary].
+  /// Fill color. Defaults to [ColorScheme.primary].
   final Color? color;
 
-  /// Color of the track behind the progress arc. Defaults to
-  /// [ColorScheme.surfaceContainerHighest].
+  /// Track color. Defaults to [ColorScheme.surfaceContainerHighest].
   final Color? backgroundColor;
 
+  /// Corner radius. Defaults to a stadium shape (`height / 2`).
+  final BorderRadiusGeometry? borderRadius;
+
   /// Label announced by screen readers alongside the progress value
-  /// (e.g. "Upload progress").
+  /// (e.g. "Download progress").
   final String? semanticsLabel;
 
-  /// Optional widget centered inside the ring (e.g. a percentage label).
-  ///
-  /// Rendered as-is — it does not track the ring's in-progress animated
-  /// value. For a label that animates in sync with the ring, compose a
-  /// [CountUpText] as the [child].
-  final Widget? child;
-
   @override
-  State<AnimatedProgressRing> createState() => _AnimatedProgressRingState();
+  State<AnimatedProgressBar> createState() => _AnimatedProgressBarState();
 }
 
-class _AnimatedProgressRingState extends State<AnimatedProgressRing>
+class _AnimatedProgressBarState extends State<AnimatedProgressBar>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -94,7 +87,7 @@ class _AnimatedProgressRingState extends State<AnimatedProgressRing>
   }
 
   @override
-  void didUpdateWidget(AnimatedProgressRing old) {
+  void didUpdateWidget(AnimatedProgressBar old) {
     super.didUpdateWidget(old);
     if (old.duration != widget.duration) {
       _controller.duration = widget.duration;
@@ -119,34 +112,23 @@ class _AnimatedProgressRingState extends State<AnimatedProgressRing>
     super.dispose();
   }
 
-  Widget _ring(BuildContext context, double value) {
+  Widget _bar(BuildContext context, double value) {
     final cs = Theme.of(context).colorScheme;
-    // The stacked indicators are excluded from semantics — the outer
-    // Semantics node announces a single stable progress value instead of
-    // "100%" for the track plus per-frame values for the arc.
+    final radius =
+        widget.borderRadius ?? BorderRadius.circular(widget.height / 2);
     return Semantics(
       label: widget.semanticsLabel,
       value: '${(_targetValue * 100).round()}%',
-      child: ExcludeSemantics(
-        child: SizedBox(
-          width: widget.size,
-          height: widget.size,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              CircularProgressIndicator(
-                value: 1.0,
-                strokeWidth: widget.strokeWidth,
-                color: widget.backgroundColor ?? cs.surfaceContainerHighest,
-              ),
-              CircularProgressIndicator(
-                value: value,
-                strokeWidth: widget.strokeWidth,
-                color: widget.color ?? cs.primary,
-                backgroundColor: Colors.transparent,
-              ),
-              if (widget.child != null) widget.child!,
-            ],
+      child: ClipRRect(
+        borderRadius: radius,
+        child: Container(
+          height: widget.height,
+          color: widget.backgroundColor ?? cs.surfaceContainerHighest,
+          alignment: AlignmentDirectional.centerStart,
+          child: FractionallySizedBox(
+            widthFactor: value,
+            heightFactor: 1.0,
+            child: ColoredBox(color: widget.color ?? cs.primary),
           ),
         ),
       ),
@@ -156,11 +138,11 @@ class _AnimatedProgressRingState extends State<AnimatedProgressRing>
   @override
   Widget build(BuildContext context) {
     if (_reduceMotion) {
-      return _ring(context, _targetValue);
+      return _bar(context, _targetValue);
     }
     return AnimatedBuilder(
       animation: _animation,
-      builder: (context, _) => _ring(context, _animation.value),
+      builder: (context, _) => _bar(context, _animation.value),
     );
   }
 }

@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 /// to the new target whenever [value] changes.
 ///
 /// Respects [MediaQuery.disableAnimations] — snaps to [value] immediately when
-/// reduce-motion is enabled.
+/// reduce-motion is enabled, and the internal ticker never runs.
+///
+/// Screen readers announce only the final [value], not every animation frame.
 ///
 /// ```dart
 /// CountUpText(
@@ -37,28 +39,50 @@ class _CountUpTextState extends State<CountUpText>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+  bool _reduceMotion = false;
 
   @override
   void initState() {
     super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: widget.duration);
-    _animation = Tween<double>(begin: 0, end: widget.value).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
-    _controller.forward();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+    _animation = Tween<double>(
+      begin: 0,
+      end: widget.value,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    // Started (or snapped) in didChangeDependencies, once reduce-motion is
+    // known — MediaQuery is not available in initState.
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _reduceMotion = MediaQuery.disableAnimationsOf(context);
+    if (_reduceMotion) {
+      // Complete instantly so a later reduce-motion toggle never reveals a
+      // stale mid-flight value.
+      _controller.value = 1.0;
+    } else if (!_controller.isAnimating && !_controller.isCompleted) {
+      _controller.forward();
+    }
   }
 
   @override
   void didUpdateWidget(CountUpText old) {
     super.didUpdateWidget(old);
+    if (old.duration != widget.duration) {
+      _controller.duration = widget.duration;
+    }
     if (old.value != widget.value) {
       final from = _animation.value;
-      _controller.duration = widget.duration;
-      _animation = Tween<double>(begin: from, end: widget.value).animate(
-        CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-      );
-      _controller.forward(from: 0);
+      _animation = Tween<double>(
+        begin: from,
+        end: widget.value,
+      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+      if (_reduceMotion) {
+        _controller.value = 1.0;
+      } else {
+        _controller.forward(from: 0);
+      }
     }
   }
 
@@ -73,12 +97,19 @@ class _CountUpTextState extends State<CountUpText>
 
   @override
   Widget build(BuildContext context) {
-    if (MediaQuery.of(context).disableAnimations) {
+    if (_reduceMotion) {
       return Text(_format(widget.value), style: widget.style);
     }
+    // semanticsLabel stays fixed at the target value so screen readers
+    // announce the result once instead of every animation frame.
+    final semanticsLabel = _format(widget.value);
     return AnimatedBuilder(
       animation: _animation,
-      builder: (_, __) => Text(_format(_animation.value), style: widget.style),
+      builder: (_, __) => Text(
+        _format(_animation.value),
+        style: widget.style,
+        semanticsLabel: semanticsLabel,
+      ),
     );
   }
 }

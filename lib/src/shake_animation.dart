@@ -35,7 +35,7 @@ class ShakeAnimation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (MediaQuery.of(context).disableAnimations) return child;
+    if (MediaQuery.disableAnimationsOf(context)) return child;
     return child
         .animate(key: ValueKey(trigger))
         .shake(duration: duration, hz: 4, offset: Offset(offset, 0));

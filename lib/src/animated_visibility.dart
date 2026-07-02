@@ -34,8 +34,9 @@ class AnimatedVisibility extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final reduceMotion = MediaQuery.of(context).disableAnimations;
-    final opacity = visible ? 1.0 : minOpacity;
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    // Clamp defensively: the constructor assert is stripped in release mode.
+    final opacity = visible ? 1.0 : minOpacity.clamp(0.0, 1.0);
 
     final Widget result;
     if (reduceMotion) {

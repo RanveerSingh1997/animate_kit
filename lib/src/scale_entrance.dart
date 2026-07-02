@@ -30,7 +30,7 @@ class ScaleEntrance extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (MediaQuery.of(context).disableAnimations) return child;
+    if (MediaQuery.disableAnimationsOf(context)) return child;
     return child
         .animate(delay: delay)
         .fadeIn(duration: duration, curve: Curves.easeOut)

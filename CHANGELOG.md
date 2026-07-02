@@ -1,3 +1,65 @@
+## 0.6.0
+
+New widgets (all respect `MediaQuery.disableAnimations`, follow the
+package's semantics and repaint-isolation standards):
+
+- `BlurEntrance`: fade + blur-to-sharp on mount.
+- `FlipEntrance`: fade + 3D flip in on mount (`FlipAxis` horizontal/vertical).
+- `FlipCard`: state-driven 3D flip between a front and back face.
+- `AnimatedBlur`: state-driven Gaussian blur toggle (spoilers, focus
+  effects); skips the filter entirely when crisp.
+- `FadeSwitcher`: cross-fade + subtle scale between changing children —
+  an `AnimatedSwitcher` with production defaults and reduce-motion guard.
+- `TapScale`: press-down scale feedback wrapping a `GestureDetector`.
+- `SpinAnimation`: repeating continuous rotation for loading/sync
+  indicators, repaint-isolated.
+- `LoadingDots`: staggered "typing indicator" dots driven by a single
+  shared controller (dots can't drift out of phase), repaint-isolated,
+  no ticker under reduce-motion.
+- `AnimatedProgressBar`: linear counterpart to `AnimatedProgressRing`,
+  with the same single-announcement semantics and `semanticsLabel`.
+
+## 0.5.0
+
+Production hardening — performance, robustness, and accessibility.
+
+Performance:
+
+- All widgets now use aspect-scoped `MediaQuery.disableAnimationsOf` instead
+  of `MediaQuery.of`, so they no longer rebuild on unrelated MediaQuery
+  changes (keyboard, resize, padding).
+- `PulseAnimation`, `BounceAnimation`, and `SkeletonBox` wrap their endlessly
+  repeating animations in a `RepaintBoundary`, isolating per-frame repaints
+  from the surrounding subtree.
+- `CountUpText`, `TypewriterText`, and `AnimatedProgressRing` no longer run
+  their internal ticker when reduce-motion is enabled, and snap correctly if
+  reduce-motion toggles mid-animation.
+
+Robustness:
+
+- `TypewriterText` now reveals text by grapheme cluster — emoji, combining
+  marks, and other multi-code-unit characters are never split mid-glyph.
+- Range-checked parameters (`minOpacity`, `minScale`, progress `value`) are
+  defensively clamped at render time, since constructor asserts are stripped
+  in release builds.
+- `CountUpText` / `AnimatedProgressRing` now pick up `duration` changes that
+  arrive without a simultaneous value change.
+
+Accessibility:
+
+- `CountUpText` and `TypewriterText` announce only the final value / full
+  text to screen readers instead of every animation frame.
+- `AnimatedProgressRing` exposes a single semantic progress value (e.g.
+  "70%") — the background track no longer leaks a "100%" announcement. Added
+  optional `semanticsLabel` parameter.
+
+Tooling:
+
+- Added `analysis_options.yaml` (flutter_lints was previously inactive).
+- Added GitHub Actions CI: format check, analyze (fatal-infos), tests, and
+  `pub publish --dry-run` validation.
+- Codebase is now `dart format` clean.
+
 ## 0.4.0
 
 New widgets (all respect `MediaQuery.disableAnimations`):

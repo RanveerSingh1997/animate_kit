@@ -31,14 +31,18 @@ class BounceAnimation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (MediaQuery.of(context).disableAnimations) return child;
-    return child
-        .animate(onPlay: (c) => c.repeat(reverse: true))
-        .moveY(
-          begin: 0,
-          end: -height,
-          duration: duration,
-          curve: Curves.easeInOut,
-        );
+    if (MediaQuery.disableAnimationsOf(context)) return child;
+    // RepaintBoundary isolates the endlessly repainting bounce from the
+    // surrounding subtree.
+    return RepaintBoundary(
+      child: child
+          .animate(onPlay: (c) => c.repeat(reverse: true))
+          .moveY(
+            begin: 0,
+            end: -height,
+            duration: duration,
+            curve: Curves.easeInOut,
+          ),
+    );
   }
 }
