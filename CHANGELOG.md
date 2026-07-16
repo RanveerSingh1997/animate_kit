@@ -1,3 +1,24 @@
+## 0.7.0
+
+New widgets:
+
+- `AnimatedCheckmark`: draws/un-draws a checkmark stroke via `CustomPaint`
+  path metrics; purely visual, wrap in your own semantic control.
+- `RollingCounter`: slot-machine digit roll on value change — rolls up for
+  increases, down for decreases, tabular figures to prevent column shift,
+  announces the whole number once to screen readers.
+- `Marquee`: loops overflowing text horizontally at a configurable velocity;
+  renders static text when it fits, static ellipsized text (no ticker) under
+  reduce-motion, and announces the full text once.
+
+Custom easing:
+
+- Added a `curve` parameter to all 19 widgets with a meaningful transition
+  (entrances, toggles, `FlipCard`, `FadeSwitcher`, `TapScale`,
+  `PulseAnimation`, `BounceAnimation`, `CountUpText`, progress ring/bar).
+  Defaults match previous behavior; for entrance widgets `curve` shapes the
+  motion component while the fade stays `Curves.easeOut`.
+
 ## 0.6.0
 
 New widgets (all respect `MediaQuery.disableAnimations`, follow the

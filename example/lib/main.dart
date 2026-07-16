@@ -41,6 +41,8 @@ class _DemoPageState extends State<DemoPage> {
   bool _showFront = true;
   int _switcherIndex = 0;
   int _tapCount = 0;
+  bool _checked = false;
+  int _counter = 1289;
 
   @override
   Widget build(BuildContext context) {
@@ -60,20 +62,32 @@ class _DemoPageState extends State<DemoPage> {
               ),
               ScaleEntrance(
                 delay: const Duration(milliseconds: 120),
-                child: _card(cs.secondaryContainer, 'ScaleEntrance — scales in'),
+                child: _card(
+                  cs.secondaryContainer,
+                  'ScaleEntrance — scales in',
+                ),
               ),
               FadeEntrance(
                 delay: const Duration(milliseconds: 240),
                 direction: FadeSlideDirection.left,
-                child: _card(cs.tertiaryContainer, 'FadeEntrance — slides left'),
+                child: _card(
+                  cs.tertiaryContainer,
+                  'FadeEntrance — slides left',
+                ),
               ),
               RotateEntrance(
                 delay: const Duration(milliseconds: 360),
-                child: _card(cs.primaryContainer, 'RotateEntrance — rotates in'),
+                child: _card(
+                  cs.primaryContainer,
+                  'RotateEntrance — rotates in',
+                ),
               ),
               BlurEntrance(
                 delay: const Duration(milliseconds: 480),
-                child: _card(cs.secondaryContainer, 'BlurEntrance — sharpens in'),
+                child: _card(
+                  cs.secondaryContainer,
+                  'BlurEntrance — sharpens in',
+                ),
               ),
               FlipEntrance(
                 delay: const Duration(milliseconds: 600),
@@ -85,19 +99,27 @@ class _DemoPageState extends State<DemoPage> {
 
           // ── AnimatedVisibility ─────────────────────────────────────────
           _label('AnimatedVisibility'),
-          Row(children: [
-            Switch(value: _visible, onChanged: (v) => setState(() => _visible = v)),
-            const SizedBox(width: 12),
-            Expanded(
-              child: AnimatedVisibility(
-                visible: _visible,
-                minOpacity: 0.15,
-                ignorePointerWhenHidden: true,
-                child: _card(cs.secondary, 'Toggle opacity',
-                    textColor: cs.onSecondary),
+          Row(
+            children: [
+              Switch(
+                value: _visible,
+                onChanged: (v) => setState(() => _visible = v),
               ),
-            ),
-          ]),
+              const SizedBox(width: 12),
+              Expanded(
+                child: AnimatedVisibility(
+                  visible: _visible,
+                  minOpacity: 0.15,
+                  ignorePointerWhenHidden: true,
+                  child: _card(
+                    cs.secondary,
+                    'Toggle opacity',
+                    textColor: cs.onSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 28),
 
           // ── AnimatedSurface ────────────────────────────────────────────
@@ -120,7 +142,8 @@ class _DemoPageState extends State<DemoPage> {
                 child: Text(
                   'Tap to ${_selected ? 'deselect' : 'select'}',
                   style: TextStyle(
-                      color: _selected ? cs.onPrimaryContainer : cs.onSurface),
+                    color: _selected ? cs.onPrimaryContainer : cs.onSurface,
+                  ),
                 ),
               ),
             ),
@@ -129,33 +152,41 @@ class _DemoPageState extends State<DemoPage> {
 
           // ── ScaleToggle + SlideToggle ──────────────────────────────────
           _label('ScaleToggle + SlideToggle'),
-          Row(children: [
-            Expanded(
-              child: Column(children: [
-                Switch(
-                    value: _scaled,
-                    onChanged: (v) => setState(() => _scaled = v)),
-                ScaleToggle(
-                  scaled: _scaled,
-                  minScale: 0.75,
-                  child: _card(cs.primaryContainer, 'Scale'),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  children: [
+                    Switch(
+                      value: _scaled,
+                      onChanged: (v) => setState(() => _scaled = v),
+                    ),
+                    ScaleToggle(
+                      scaled: _scaled,
+                      minScale: 0.75,
+                      child: _card(cs.primaryContainer, 'Scale'),
+                    ),
+                  ],
                 ),
-              ]),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(children: [
-                Switch(
-                    value: _slid,
-                    onChanged: (v) => setState(() => _slid = v)),
-                SlideToggle(
-                  visible: _slid,
-                  hiddenOffset: const Offset(0, 0.4),
-                  child: _card(cs.secondaryContainer, 'Slide'),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  children: [
+                    Switch(
+                      value: _slid,
+                      onChanged: (v) => setState(() => _slid = v),
+                    ),
+                    SlideToggle(
+                      visible: _slid,
+                      hiddenOffset: const Offset(0, 0.4),
+                      child: _card(cs.secondaryContainer, 'Slide'),
+                    ),
+                  ],
                 ),
-              ]),
-            ),
-          ]),
+              ),
+            ],
+          ),
           const SizedBox(height: 28),
 
           // ── ExpandableSection ──────────────────────────────────────────
@@ -168,88 +199,102 @@ class _DemoPageState extends State<DemoPage> {
             expanded: _expanded,
             child: Padding(
               padding: const EdgeInsets.only(top: 8),
-              child: _card(cs.tertiaryContainer,
-                  'This content expands and collapses smoothly.'),
+              child: _card(
+                cs.tertiaryContainer,
+                'This content expands and collapses smoothly.',
+              ),
             ),
           ),
           const SizedBox(height: 28),
 
           // ── AnimatedBlur + FlipCard ────────────────────────────────────
           _label('AnimatedBlur + FlipCard'),
-          Row(children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () => setState(() => _blurred = !_blurred),
-                child: AnimatedBlur(
-                  blurred: _blurred,
-                  child: _card(
-                    cs.primaryContainer,
-                    _blurred ? 'Tap to reveal' : 'Spoiler revealed!',
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => _blurred = !_blurred),
+                  child: AnimatedBlur(
+                    blurred: _blurred,
+                    child: _card(
+                      cs.primaryContainer,
+                      _blurred ? 'Tap to reveal' : 'Spoiler revealed!',
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: GestureDetector(
-                onTap: () => setState(() => _showFront = !_showFront),
-                child: FlipCard(
-                  showFront: _showFront,
-                  front: _card(cs.secondaryContainer, 'Front — tap to flip'),
-                  back: _card(cs.tertiaryContainer, 'Back — tap to flip'),
+              const SizedBox(width: 12),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => _showFront = !_showFront),
+                  child: FlipCard(
+                    showFront: _showFront,
+                    front: _card(cs.secondaryContainer, 'Front — tap to flip'),
+                    back: _card(cs.tertiaryContainer, 'Back — tap to flip'),
+                  ),
                 ),
               ),
-            ),
-          ]),
+            ],
+          ),
           const SizedBox(height: 28),
 
           // ── FadeSwitcher ───────────────────────────────────────────────
           _label('FadeSwitcher'),
-          Row(children: [
-            FilledButton.tonal(
-              onPressed: () =>
-                  setState(() => _switcherIndex = (_switcherIndex + 1) % 3),
-              child: const Text('Next'),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: FadeSwitcher(
-                child: _card(
-                  [cs.primaryContainer, cs.secondaryContainer,
-                      cs.tertiaryContainer][_switcherIndex],
-                  'Panel ${_switcherIndex + 1}',
-                  key: ValueKey(_switcherIndex),
+          Row(
+            children: [
+              FilledButton.tonal(
+                onPressed: () =>
+                    setState(() => _switcherIndex = (_switcherIndex + 1) % 3),
+                child: const Text('Next'),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: FadeSwitcher(
+                  child: _card(
+                    [
+                      cs.primaryContainer,
+                      cs.secondaryContainer,
+                      cs.tertiaryContainer,
+                    ][_switcherIndex],
+                    'Panel ${_switcherIndex + 1}',
+                    key: ValueKey(_switcherIndex),
+                  ),
                 ),
               ),
-            ),
-          ]),
+            ],
+          ),
           const SizedBox(height: 28),
 
           // ── TapScale ───────────────────────────────────────────────────
           _label('TapScale'),
           TapScale(
             onTap: () => setState(() => _tapCount++),
-            child: _card(cs.primary, 'Press me ($_tapCount)',
-                textColor: cs.onPrimary),
+            child: _card(
+              cs.primary,
+              'Press me ($_tapCount)',
+              textColor: cs.onPrimary,
+            ),
           ),
           const SizedBox(height: 28),
 
           // ── PulseAnimation ─────────────────────────────────────────────
           _label('PulseAnimation'),
-          Row(children: [
-            PulseAnimation(
-              child: Container(
-                width: 16,
-                height: 16,
-                decoration: BoxDecoration(
-                  color: cs.error,
-                  shape: BoxShape.circle,
+          Row(
+            children: [
+              PulseAnimation(
+                child: Container(
+                  width: 16,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: cs.error,
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            const Text('Live indicator'),
-          ]),
+              const SizedBox(width: 12),
+              const Text('Live indicator'),
+            ],
+          ),
           const SizedBox(height: 28),
 
           // ── ShakeAnimation ─────────────────────────────────────────────
@@ -265,81 +310,94 @@ class _DemoPageState extends State<DemoPage> {
 
           // ── BounceAnimation ────────────────────────────────────────────
           _label('BounceAnimation'),
-          Row(children: [
-            BounceAnimation(
-              child: Icon(Icons.keyboard_arrow_down, color: cs.primary),
-            ),
-            const SizedBox(width: 12),
-            const Text('Scroll for more'),
-          ]),
+          Row(
+            children: [
+              BounceAnimation(
+                child: Icon(Icons.keyboard_arrow_down, color: cs.primary),
+              ),
+              const SizedBox(width: 12),
+              const Text('Scroll for more'),
+            ],
+          ),
           const SizedBox(height: 28),
 
           // ── SpinAnimation + LoadingDots ────────────────────────────────
           _label('SpinAnimation + LoadingDots'),
-          Row(children: [
-            SpinAnimation(child: Icon(Icons.sync, color: cs.primary)),
-            const SizedBox(width: 24),
-            LoadingDots(color: cs.primary),
-            const SizedBox(width: 12),
-            const Text('Someone is typing…'),
-          ]),
+          Row(
+            children: [
+              SpinAnimation(child: Icon(Icons.sync, color: cs.primary)),
+              const SizedBox(width: 24),
+              LoadingDots(color: cs.primary),
+              const SizedBox(width: 12),
+              const Text('Someone is typing…'),
+            ],
+          ),
           const SizedBox(height: 28),
 
           // ── SkeletonBox ────────────────────────────────────────────────
           _label('SkeletonBox'),
-          Row(children: [
-            Switch(value: _loaded, onChanged: (v) => setState(() => _loaded = v)),
-            const SizedBox(width: 8),
-            const Text('Loaded'),
-          ]),
+          Row(
+            children: [
+              Switch(
+                value: _loaded,
+                onChanged: (v) => setState(() => _loaded = v),
+              ),
+              const SizedBox(width: 8),
+              const Text('Loaded'),
+            ],
+          ),
           const SizedBox(height: 8),
           if (_loaded)
             _card(cs.surfaceContainerHighest, 'Content loaded')
           else
-            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              SkeletonBox(
-                child: Container(
-                  width: double.infinity,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: cs.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(4),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SkeletonBox(
+                  child: Container(
+                    width: double.infinity,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: cs.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              SkeletonBox(
-                child: Container(
-                  width: 180,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: cs.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(4),
+                const SizedBox(height: 8),
+                SkeletonBox(
+                  child: Container(
+                    width: 180,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: cs.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
                 ),
-              ),
-            ]),
+              ],
+            ),
           const SizedBox(height: 28),
 
           // ── CountUpText ────────────────────────────────────────────────
           _label('CountUpText'),
-          Row(children: [
-            FilledButton.tonal(
-              onPressed: () =>
-                  setState(() => _score = (_score + 250).clamp(0, 9999)),
-              child: const Text('+250'),
-            ),
-            const SizedBox(width: 16),
-            CountUpText(
-              value: _score,
-              duration: const Duration(milliseconds: 600),
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
-              formatter: (v) => v.toInt().toString(),
-            ),
-          ]),
+          Row(
+            children: [
+              FilledButton.tonal(
+                onPressed: () =>
+                    setState(() => _score = (_score + 250).clamp(0, 9999)),
+                child: const Text('+250'),
+              ),
+              const SizedBox(width: 16),
+              CountUpText(
+                value: _score,
+                duration: const Duration(milliseconds: 600),
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+                formatter: (v) => v.toInt().toString(),
+              ),
+            ],
+          ),
           const SizedBox(height: 28),
 
           // ── TypewriterText ─────────────────────────────────────────────
@@ -347,11 +405,18 @@ class _DemoPageState extends State<DemoPage> {
           DropdownButton<String>(
             value: _typed,
             items: const [
-              DropdownMenuItem(value: 'animate_kit', child: Text('animate_kit')),
               DropdownMenuItem(
-                  value: 'Flutter animations', child: Text('Flutter animations')),
+                value: 'animate_kit',
+                child: Text('animate_kit'),
+              ),
               DropdownMenuItem(
-                  value: 'Type by type...', child: Text('Type by type...')),
+                value: 'Flutter animations',
+                child: Text('Flutter animations'),
+              ),
+              DropdownMenuItem(
+                value: 'Type by type...',
+                child: Text('Type by type...'),
+              ),
             ],
             onChanged: (v) => setState(() => _typed = v!),
           ),
@@ -365,25 +430,78 @@ class _DemoPageState extends State<DemoPage> {
 
           // ── AnimatedProgressRing ───────────────────────────────────────
           _label('AnimatedProgressRing + AnimatedProgressBar'),
-          Row(children: [
-            AnimatedProgressRing(
-              value: _progress,
-              child: CountUpText(
-                value: _progress * 100,
-                formatter: (v) => '${v.round()}%',
+          Row(
+            children: [
+              AnimatedProgressRing(
+                value: _progress,
+                child: CountUpText(
+                  value: _progress * 100,
+                  formatter: (v) => '${v.round()}%',
+                ),
               ),
-            ),
-            const SizedBox(width: 16),
-            FilledButton.tonal(
-              onPressed: () =>
-                  setState(() => _progress = (_progress + 0.15) % 1.0),
-              child: const Text('Advance'),
-            ),
-          ]),
+              const SizedBox(width: 16),
+              FilledButton.tonal(
+                onPressed: () =>
+                    setState(() => _progress = (_progress + 0.15) % 1.0),
+                child: const Text('Advance'),
+              ),
+            ],
+          ),
           const SizedBox(height: 16),
           AnimatedProgressBar(
             value: _progress,
             semanticsLabel: 'Demo progress',
+          ),
+          const SizedBox(height: 28),
+
+          // ── AnimatedCheckmark + RollingCounter ─────────────────────────
+          _label('AnimatedCheckmark + RollingCounter'),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () => setState(() => _checked = !_checked),
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: cs.outline),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: AnimatedCheckmark(checked: _checked),
+                ),
+              ),
+              const SizedBox(width: 24),
+              IconButton.filledTonal(
+                onPressed: () => setState(() => _counter -= 7),
+                icon: const Icon(Icons.remove),
+              ),
+              const SizedBox(width: 8),
+              RollingCounter(
+                value: _counter,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton.filledTonal(
+                onPressed: () => setState(() => _counter += 7),
+                icon: const Icon(Icons.add),
+              ),
+            ],
+          ),
+          const SizedBox(height: 28),
+
+          // ── Marquee ────────────────────────────────────────────────────
+          _label('Marquee'),
+          Container(
+            width: 220,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: cs.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Marquee(
+              text: 'Now playing: A track title far too long to fit here',
+            ),
           ),
           const SizedBox(height: 32),
         ],
@@ -392,15 +510,14 @@ class _DemoPageState extends State<DemoPage> {
   }
 
   Widget _label(String text) => Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: Text(
-          text,
-          style: Theme.of(context)
-              .textTheme
-              .titleSmall
-              ?.copyWith(fontWeight: FontWeight.bold),
-        ),
-      );
+    padding: const EdgeInsets.only(bottom: 10),
+    child: Text(
+      text,
+      style: Theme.of(
+        context,
+      ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+    ),
+  );
 
   Widget _card(Color color, String label, {Color? textColor, Key? key}) =>
       Container(

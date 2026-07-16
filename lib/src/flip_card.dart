@@ -25,6 +25,7 @@ class FlipCard extends StatelessWidget {
     required this.showFront,
     this.duration = const Duration(milliseconds: 400),
     this.axis = Axis.horizontal,
+    this.curve = Curves.easeInOutCubic,
     super.key,
   });
 
@@ -43,6 +44,9 @@ class FlipCard extends StatelessWidget {
   /// [Axis.vertical] flips around the horizontal axis (top-bottom turn).
   final Axis axis;
 
+  /// Easing of the flip.
+  final Curve curve;
+
   @override
   Widget build(BuildContext context) {
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
@@ -52,7 +56,7 @@ class FlipCard extends StatelessWidget {
     return TweenAnimationBuilder<double>(
       tween: Tween(end: showFront ? 0.0 : 1.0),
       duration: duration,
-      curve: Curves.easeInOutCubic,
+      curve: curve,
       child: front,
       builder: (context, t, frontChild) {
         final angle = t * math.pi;

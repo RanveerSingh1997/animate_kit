@@ -19,6 +19,7 @@ class PulseAnimation extends StatelessWidget {
     this.minScale = 0.9,
     this.minOpacity = 0.6,
     this.duration = const Duration(milliseconds: 900),
+    this.curve = Curves.easeInOut,
     super.key,
   }) : assert(minScale > 0.0 && minScale <= 1.0),
        assert(minOpacity >= 0.0 && minOpacity <= 1.0);
@@ -34,6 +35,9 @@ class PulseAnimation extends StatelessWidget {
   /// Duration of one full pulse cycle (peak → trough → peak).
   final Duration duration;
 
+  /// Easing of the pulse.
+  final Curve curve;
+
   @override
   Widget build(BuildContext context) {
     if (MediaQuery.disableAnimationsOf(context)) return child;
@@ -48,13 +52,13 @@ class PulseAnimation extends StatelessWidget {
             begin: const Offset(1, 1),
             end: Offset(scale, scale),
             duration: duration,
-            curve: Curves.easeInOut,
+            curve: curve,
           )
           .fade(
             begin: 1.0,
             end: minOpacity.clamp(0.0, 1.0),
             duration: duration,
-            curve: Curves.easeInOut,
+            curve: curve,
           ),
     );
   }

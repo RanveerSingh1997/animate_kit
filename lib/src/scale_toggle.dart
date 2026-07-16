@@ -22,6 +22,7 @@ class ScaleToggle extends StatelessWidget {
     required this.scaled,
     this.minScale = 0.9,
     this.duration = const Duration(milliseconds: 150),
+    this.curve = Curves.easeOut,
     super.key,
   }) : assert(minScale > 0.0 && minScale <= 1.0);
 
@@ -35,6 +36,9 @@ class ScaleToggle extends StatelessWidget {
 
   final Duration duration;
 
+  /// Easing of the scale transition.
+  final Curve curve;
+
   @override
   Widget build(BuildContext context) {
     final resolvedDuration = MediaQuery.disableAnimationsOf(context)
@@ -44,7 +48,7 @@ class ScaleToggle extends StatelessWidget {
       // Clamp defensively: the constructor assert is stripped in release mode.
       scale: scaled ? 1.0 : minScale.clamp(0.001, 1.0),
       duration: resolvedDuration,
-      curve: Curves.easeOut,
+      curve: curve,
       child: child,
     );
   }

@@ -53,14 +53,27 @@ require no controllers or `initState`.
 |---|---|
 | [`CountUpText`](#countuptext) | Animates a number from its previous value to a new one |
 | [`TypewriterText`](#typewritertext) | Reveals text character by character |
+| [`RollingCounter`](#rollingcounter) | Slot-machine digit roll when a value changes |
+| [`Marquee`](#marquee) | Loops overflowing text horizontally |
 | [`AnimatedProgressRing`](#animatedprogressring) | Animates a circular progress ring to its value |
 | [`AnimatedProgressBar`](#animatedprogressbar) | Animates a linear progress bar to its value |
+| [`AnimatedCheckmark`](#animatedcheckmark) | Draws/un-draws a checkmark stroke |
+
+## Custom easing
+
+Every widget with a meaningful transition accepts a `curve` parameter
+(defaults match each widget's built-in feel). For entrances, `curve` shapes
+the motion component — the fade always uses `Curves.easeOut`.
+
+```dart
+ScaleEntrance(curve: Curves.elasticOut, child: MyBadge())
+```
 
 ## Installation
 
 ```yaml
 dependencies:
-  animate_kit: ^0.6.0
+  animate_kit: ^0.7.0
 ```
 
 ## Usage
@@ -548,6 +561,67 @@ AnimatedProgressBar(
 
 ---
 
+### RollingCounter
+
+```dart
+RollingCounter(
+  value: cartItemCount,
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `value` | `int` | required | Current value; changing it rolls each digit |
+| `duration` | `Duration` | `300ms` | Roll duration |
+| `curve` | `Curve` | `easeOutCubic` | Easing of the roll |
+| `style` | `TextStyle?` | `null` | Text style (tabular figures applied) |
+| `formatter` | `String Function(int)?` | `toString` | Custom formatter |
+
+---
+
+### Marquee
+
+```dart
+SizedBox(
+  width: 160,
+  child: Marquee(text: 'A track title far too long to fit'),
+)
+```
+
+Renders as plain static text when it fits; scrolls in a seamless loop only
+when it overflows.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `text` | `String` | required | Text to display |
+| `style` | `TextStyle?` | `null` | Text style |
+| `velocity` | `double` | `40.0` | Scroll speed, logical px/second |
+| `gap` | `double` | `32.0` | Space between the text and its looping copy |
+
+---
+
+### AnimatedCheckmark
+
+```dart
+AnimatedCheckmark(
+  checked: isDone,
+  color: Colors.green,
+)
+```
+
+Purely visual — wrap it in your own tappable/semantic control.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `checked` | `bool` | required | Whether the mark is drawn |
+| `size` | `double` | `24.0` | Bounding box width/height |
+| `color` | `Color?` | `ColorScheme.primary` | Stroke color |
+| `strokeWidth` | `double` | `3.0` | Stroke width |
+| `duration` | `Duration` | `300ms` | Draw/un-draw duration |
+| `curve` | `Curve` | `easeOutCubic` | Easing of the stroke draw |
+
+---
+
 ## Accessibility & performance
 
 - **Screen readers**: `CountUpText` and `TypewriterText` announce only the
@@ -594,8 +668,11 @@ All widgets check `MediaQuery.of(context).disableAnimations`:
 | `SkeletonBox` | Returns `child` unchanged |
 | `CountUpText` | Shows target value immediately |
 | `TypewriterText` | Shows full text immediately |
+| `RollingCounter` | Swaps digits instantly |
+| `Marquee` | Static ellipsized text (no ticker) |
 | `AnimatedProgressRing` | Shows target value immediately |
 | `AnimatedProgressBar` | Shows target value immediately |
+| `AnimatedCheckmark` | Snaps to final state |
 
 ## License
 

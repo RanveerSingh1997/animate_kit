@@ -19,6 +19,7 @@ class AnimatedVisibility extends StatelessWidget {
     required this.visible,
     this.minOpacity = 0.35,
     this.duration = const Duration(milliseconds: 120),
+    this.curve = Curves.easeOut,
     this.ignorePointerWhenHidden = false,
     super.key,
   }) : assert(minOpacity >= 0.0 && minOpacity <= 1.0);
@@ -27,6 +28,9 @@ class AnimatedVisibility extends StatelessWidget {
   final bool visible;
   final double minOpacity;
   final Duration duration;
+
+  /// Easing of the opacity transition.
+  final Curve curve;
 
   /// When `true` and [visible] is `false`, wraps the result in [IgnorePointer]
   /// to block hit-testing while the widget is at [minOpacity].
@@ -45,7 +49,7 @@ class AnimatedVisibility extends StatelessWidget {
       result = AnimatedOpacity(
         opacity: opacity,
         duration: duration,
-        curve: Curves.easeOut,
+        curve: curve,
         child: child,
       );
     }

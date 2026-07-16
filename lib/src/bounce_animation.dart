@@ -18,6 +18,7 @@ class BounceAnimation extends StatelessWidget {
     required this.child,
     this.height = 8.0,
     this.duration = const Duration(milliseconds: 600),
+    this.curve = Curves.easeInOut,
     super.key,
   }) : assert(height > 0.0);
 
@@ -29,6 +30,9 @@ class BounceAnimation extends StatelessWidget {
   /// Duration of one bounce cycle (up → down → up).
   final Duration duration;
 
+  /// Easing of the bounce.
+  final Curve curve;
+
   @override
   Widget build(BuildContext context) {
     if (MediaQuery.disableAnimationsOf(context)) return child;
@@ -37,12 +41,7 @@ class BounceAnimation extends StatelessWidget {
     return RepaintBoundary(
       child: child
           .animate(onPlay: (c) => c.repeat(reverse: true))
-          .moveY(
-            begin: 0,
-            end: -height,
-            duration: duration,
-            curve: Curves.easeInOut,
-          ),
+          .moveY(begin: 0, end: -height, duration: duration, curve: curve),
     );
   }
 }

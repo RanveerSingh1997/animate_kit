@@ -20,6 +20,7 @@ class SlideToggle extends StatelessWidget {
     required this.visible,
     this.hiddenOffset = const Offset(0, 1),
     this.duration = const Duration(milliseconds: 300),
+    this.curve = Curves.easeOut,
     super.key,
   });
 
@@ -35,6 +36,9 @@ class SlideToggle extends StatelessWidget {
 
   final Duration duration;
 
+  /// Easing of the slide transition.
+  final Curve curve;
+
   @override
   Widget build(BuildContext context) {
     final resolvedDuration = MediaQuery.disableAnimationsOf(context)
@@ -43,7 +47,7 @@ class SlideToggle extends StatelessWidget {
     return AnimatedSlide(
       offset: visible ? Offset.zero : hiddenOffset,
       duration: resolvedDuration,
-      curve: Curves.easeOut,
+      curve: curve,
       child: child,
     );
   }

@@ -19,6 +19,7 @@ class CountUpText extends StatefulWidget {
   const CountUpText({
     required this.value,
     this.duration = const Duration(milliseconds: 800),
+    this.curve = Curves.easeOut,
     this.style,
     this.formatter,
     super.key,
@@ -26,6 +27,10 @@ class CountUpText extends StatefulWidget {
 
   final double value;
   final Duration duration;
+
+  /// Easing of the count-up.
+  final Curve curve;
+
   final TextStyle? style;
 
   /// Custom number formatter. Defaults to rounded integer string.
@@ -48,7 +53,7 @@ class _CountUpTextState extends State<CountUpText>
     _animation = Tween<double>(
       begin: 0,
       end: widget.value,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    ).animate(CurvedAnimation(parent: _controller, curve: widget.curve));
     // Started (or snapped) in didChangeDependencies, once reduce-motion is
     // known — MediaQuery is not available in initState.
   }
@@ -77,7 +82,7 @@ class _CountUpTextState extends State<CountUpText>
       _animation = Tween<double>(
         begin: from,
         end: widget.value,
-      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+      ).animate(CurvedAnimation(parent: _controller, curve: widget.curve));
       if (_reduceMotion) {
         _controller.value = 1.0;
       } else {

@@ -20,12 +20,16 @@ class AnimatedSurface extends StatelessWidget {
     required this.decoration,
     required this.child,
     this.duration = const Duration(milliseconds: 120),
+    this.curve = Curves.easeOut,
     super.key,
   });
 
   final Decoration decoration;
   final Widget child;
   final Duration duration;
+
+  /// Easing of the decoration transition.
+  final Curve curve;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +38,7 @@ class AnimatedSurface extends StatelessWidget {
         : duration;
     return AnimatedContainer(
       duration: resolvedDuration,
-      curve: Curves.easeOut,
+      curve: curve,
       decoration: decoration,
       child: child,
     );

@@ -20,6 +20,7 @@ class StaggeredList extends StatelessWidget {
     this.itemDelay = const Duration(milliseconds: 80),
     this.duration = const Duration(milliseconds: 400),
     this.direction = FadeSlideDirection.up,
+    this.curve = Curves.easeOutCubic,
     this.crossAxisAlignment = CrossAxisAlignment.start,
     super.key,
   });
@@ -35,6 +36,9 @@ class StaggeredList extends StatelessWidget {
   /// Slide direction passed to each [FadeEntrance]. Defaults to [FadeSlideDirection.up].
   final FadeSlideDirection direction;
 
+  /// Easing passed to each [FadeEntrance].
+  final Curve curve;
+
   final CrossAxisAlignment crossAxisAlignment;
 
   @override
@@ -47,6 +51,7 @@ class StaggeredList extends StatelessWidget {
             delay: itemDelay * i,
             duration: duration,
             direction: direction,
+            curve: curve,
             child: children[i],
           ),
       ],
