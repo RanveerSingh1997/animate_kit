@@ -18,6 +18,7 @@ class BlurEntrance extends StatelessWidget {
     this.delay = Duration.zero,
     this.duration = const Duration(milliseconds: 500),
     this.initialSigma = 8.0,
+    this.curve = Curves.easeOut,
     super.key,
   }) : assert(initialSigma > 0.0);
 
@@ -28,17 +29,15 @@ class BlurEntrance extends StatelessWidget {
   /// Gaussian blur sigma at the start of the entrance. Defaults to `8`.
   final double initialSigma;
 
+  /// Easing of the blur (the fade always uses [Curves.easeOut]).
+  final Curve curve;
+
   @override
   Widget build(BuildContext context) {
     if (MediaQuery.disableAnimationsOf(context)) return child;
     return child
         .animate(delay: delay)
         .fadeIn(duration: duration, curve: Curves.easeOut)
-        .blurXY(
-          begin: initialSigma,
-          end: 0,
-          duration: duration,
-          curve: Curves.easeOut,
-        );
+        .blurXY(begin: initialSigma, end: 0, duration: duration, curve: curve);
   }
 }

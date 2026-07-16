@@ -18,6 +18,7 @@ class RotateEntrance extends StatelessWidget {
     this.delay = Duration.zero,
     this.duration = const Duration(milliseconds: 400),
     this.initialTurns = -0.25,
+    this.curve = Curves.easeOutCubic,
     super.key,
   }) : assert(initialTurns >= -1.0 && initialTurns <= 1.0);
 
@@ -29,17 +30,15 @@ class RotateEntrance extends StatelessWidget {
   /// Defaults to `-0.25` (a quarter turn counter-clockwise).
   final double initialTurns;
 
+  /// Easing of the rotation (the fade always uses [Curves.easeOut]).
+  final Curve curve;
+
   @override
   Widget build(BuildContext context) {
     if (MediaQuery.disableAnimationsOf(context)) return child;
     return child
         .animate(delay: delay)
         .fadeIn(duration: duration, curve: Curves.easeOut)
-        .rotate(
-          begin: initialTurns,
-          end: 0,
-          duration: duration,
-          curve: Curves.easeOutCubic,
-        );
+        .rotate(begin: initialTurns, end: 0, duration: duration, curve: curve);
   }
 }

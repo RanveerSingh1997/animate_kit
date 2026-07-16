@@ -19,6 +19,7 @@ class AnimatedProgressRing extends StatefulWidget {
   const AnimatedProgressRing({
     required this.value,
     this.duration = const Duration(milliseconds: 600),
+    this.curve = Curves.easeOut,
     this.size = 48.0,
     this.strokeWidth = 4.0,
     this.color,
@@ -32,6 +33,9 @@ class AnimatedProgressRing extends StatefulWidget {
   final double value;
 
   final Duration duration;
+
+  /// Easing of the progress animation.
+  final Curve curve;
 
   /// Diameter of the ring. Defaults to `48`.
   final double size;
@@ -77,7 +81,7 @@ class _AnimatedProgressRingState extends State<AnimatedProgressRing>
     _animation = Tween<double>(
       begin: 0,
       end: _targetValue,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    ).animate(CurvedAnimation(parent: _controller, curve: widget.curve));
     // Started (or snapped) in didChangeDependencies, once reduce-motion is
     // known — MediaQuery is not available in initState.
   }
@@ -104,7 +108,7 @@ class _AnimatedProgressRingState extends State<AnimatedProgressRing>
       _animation = Tween<double>(
         begin: from,
         end: _targetValue,
-      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+      ).animate(CurvedAnimation(parent: _controller, curve: widget.curve));
       if (_reduceMotion) {
         _controller.value = 1.0;
       } else {

@@ -28,6 +28,7 @@ class FlipEntrance extends StatelessWidget {
     this.duration = const Duration(milliseconds: 500),
     this.axis = FlipAxis.horizontal,
     this.initialTilt = -0.5,
+    this.curve = Curves.easeOutCubic,
     super.key,
   }) : assert(initialTilt >= -1.0 && initialTilt <= 1.0);
 
@@ -42,6 +43,9 @@ class FlipEntrance extends StatelessWidget {
   /// (`-0.5` = edge-on, 90° away). Defaults to `-0.5`.
   final double initialTilt;
 
+  /// Easing of the flip (the fade always uses [Curves.easeOut]).
+  final Curve curve;
+
   @override
   Widget build(BuildContext context) {
     if (MediaQuery.disableAnimationsOf(context)) return child;
@@ -53,13 +57,13 @@ class FlipEntrance extends StatelessWidget {
         begin: initialTilt,
         end: 0,
         duration: duration,
-        curve: Curves.easeOutCubic,
+        curve: curve,
       ),
       FlipAxis.vertical => animated.flipV(
         begin: initialTilt,
         end: 0,
         duration: duration,
-        curve: Curves.easeOutCubic,
+        curve: curve,
       ),
     };
   }

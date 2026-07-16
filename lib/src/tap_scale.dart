@@ -19,6 +19,7 @@ class TapScale extends StatefulWidget {
     this.onTap,
     this.pressedScale = 0.95,
     this.duration = const Duration(milliseconds: 100),
+    this.curve = Curves.easeOut,
     super.key,
   }) : assert(pressedScale > 0.0 && pressedScale <= 1.0);
 
@@ -32,6 +33,9 @@ class TapScale extends StatefulWidget {
 
   /// Duration of the press/release transition. Defaults to 100ms.
   final Duration duration;
+
+  /// Easing of the press/release transition.
+  final Curve curve;
 
   @override
   State<TapScale> createState() => _TapScaleState();
@@ -60,7 +64,7 @@ class _TapScaleState extends State<TapScale> {
         // mode.
         scale: _pressed ? widget.pressedScale.clamp(0.001, 1.0) : 1.0,
         duration: resolvedDuration,
-        curve: Curves.easeOut,
+        curve: widget.curve,
         child: widget.child,
       ),
     );

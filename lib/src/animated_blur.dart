@@ -23,6 +23,7 @@ class AnimatedBlur extends StatelessWidget {
     required this.blurred,
     this.sigma = 8.0,
     this.duration = const Duration(milliseconds: 250),
+    this.curve = Curves.easeOut,
     super.key,
   }) : assert(sigma > 0.0);
 
@@ -36,6 +37,9 @@ class AnimatedBlur extends StatelessWidget {
 
   final Duration duration;
 
+  /// Easing of the blur transition.
+  final Curve curve;
+
   @override
   Widget build(BuildContext context) {
     final resolvedDuration = MediaQuery.disableAnimationsOf(context)
@@ -44,7 +48,7 @@ class AnimatedBlur extends StatelessWidget {
     return TweenAnimationBuilder<double>(
       tween: Tween(end: blurred ? sigma : 0.0),
       duration: resolvedDuration,
-      curve: Curves.easeOut,
+      curve: curve,
       child: child,
       builder: (context, value, staticChild) {
         // ImageFilter.blur with sigma 0 still costs a saveLayer — skip the

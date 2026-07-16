@@ -21,6 +21,7 @@ class ExpandableSection extends StatelessWidget {
     required this.child,
     required this.expanded,
     this.duration = const Duration(milliseconds: 250),
+    this.curve = Curves.easeInOut,
     super.key,
   });
 
@@ -32,6 +33,9 @@ class ExpandableSection extends StatelessWidget {
 
   final Duration duration;
 
+  /// Easing of the expand/collapse transition.
+  final Curve curve;
+
   @override
   Widget build(BuildContext context) {
     final resolvedDuration = MediaQuery.disableAnimationsOf(context)
@@ -39,7 +43,7 @@ class ExpandableSection extends StatelessWidget {
         : duration;
     return AnimatedSize(
       duration: resolvedDuration,
-      curve: Curves.easeInOut,
+      curve: curve,
       alignment: Alignment.topCenter,
       child: ClipRect(
         child: Align(

@@ -20,6 +20,7 @@ class AnimatedProgressBar extends StatefulWidget {
   const AnimatedProgressBar({
     required this.value,
     this.duration = const Duration(milliseconds: 600),
+    this.curve = Curves.easeOut,
     this.height = 8.0,
     this.color,
     this.backgroundColor,
@@ -33,6 +34,9 @@ class AnimatedProgressBar extends StatefulWidget {
   final double value;
 
   final Duration duration;
+
+  /// Easing of the progress animation.
+  final Curve curve;
 
   /// Bar height. Defaults to `8`.
   final double height;
@@ -70,7 +74,7 @@ class _AnimatedProgressBarState extends State<AnimatedProgressBar>
     _animation = Tween<double>(
       begin: 0,
       end: _targetValue,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    ).animate(CurvedAnimation(parent: _controller, curve: widget.curve));
     // Started (or snapped) in didChangeDependencies, once reduce-motion is
     // known — MediaQuery is not available in initState.
   }
@@ -97,7 +101,7 @@ class _AnimatedProgressBarState extends State<AnimatedProgressBar>
       _animation = Tween<double>(
         begin: from,
         end: _targetValue,
-      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+      ).animate(CurvedAnimation(parent: _controller, curve: widget.curve));
       if (_reduceMotion) {
         _controller.value = 1.0;
       } else {

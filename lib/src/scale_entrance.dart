@@ -18,6 +18,7 @@ class ScaleEntrance extends StatelessWidget {
     this.delay = Duration.zero,
     this.duration = const Duration(milliseconds: 400),
     this.initialScale = 0.85,
+    this.curve = Curves.easeOutCubic,
     super.key,
   }) : assert(initialScale >= 0.0 && initialScale <= 1.0);
 
@@ -27,6 +28,9 @@ class ScaleEntrance extends StatelessWidget {
 
   /// Scale factor at the start of the entrance. Defaults to `0.85`.
   final double initialScale;
+
+  /// Easing of the scale component (the fade always uses [Curves.easeOut]).
+  final Curve curve;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +42,7 @@ class ScaleEntrance extends StatelessWidget {
           begin: Offset(initialScale, initialScale),
           end: const Offset(1, 1),
           duration: duration,
-          curve: Curves.easeOutCubic,
+          curve: curve,
         );
   }
 }

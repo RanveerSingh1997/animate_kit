@@ -36,6 +36,7 @@ class FadeEntrance extends StatelessWidget {
     this.delay = Duration.zero,
     this.duration = const Duration(milliseconds: 500),
     this.direction = FadeSlideDirection.up,
+    this.curve = Curves.easeOutCubic,
     super.key,
   });
 
@@ -46,6 +47,9 @@ class FadeEntrance extends StatelessWidget {
   /// Direction of the slide component. Defaults to [FadeSlideDirection.up].
   /// Use [FadeSlideDirection.none] for a fade-only entrance.
   final FadeSlideDirection direction;
+
+  /// Easing of the slide component (the fade always uses [Curves.easeOut]).
+  final Curve curve;
 
   @override
   Widget build(BuildContext context) {
@@ -58,25 +62,25 @@ class FadeEntrance extends StatelessWidget {
         begin: 0.06,
         end: 0,
         duration: duration,
-        curve: Curves.easeOutCubic,
+        curve: curve,
       ),
       FadeSlideDirection.down => animated.slideY(
         begin: -0.06,
         end: 0,
         duration: duration,
-        curve: Curves.easeOutCubic,
+        curve: curve,
       ),
       FadeSlideDirection.left => animated.slideX(
         begin: 0.06,
         end: 0,
         duration: duration,
-        curve: Curves.easeOutCubic,
+        curve: curve,
       ),
       FadeSlideDirection.right => animated.slideX(
         begin: -0.06,
         end: 0,
         duration: duration,
-        curve: Curves.easeOutCubic,
+        curve: curve,
       ),
       FadeSlideDirection.none => animated,
     };

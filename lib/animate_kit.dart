@@ -34,11 +34,15 @@
 /// Text & values:
 /// - [CountUpText]          — animates a number to its value
 /// - [TypewriterText]       — reveals text character by character
+/// - [RollingCounter]       — slot-machine digit roll on value change
+/// - [Marquee]              — loops overflowing text horizontally
 /// - [AnimatedProgressRing] — animates a circular progress ring to its value
 /// - [AnimatedProgressBar]  — animates a linear progress bar to its value
+/// - [AnimatedCheckmark]    — draws/un-draws a checkmark stroke
 library;
 
 export 'src/animated_blur.dart';
+export 'src/animated_checkmark.dart';
 export 'src/animated_progress_bar.dart';
 export 'src/animated_progress_ring.dart';
 export 'src/animated_surface.dart';
@@ -52,7 +56,9 @@ export 'src/fade_switcher.dart';
 export 'src/flip_card.dart';
 export 'src/flip_entrance.dart';
 export 'src/loading_dots.dart';
+export 'src/marquee.dart';
 export 'src/pulse_animation.dart';
+export 'src/rolling_counter.dart';
 export 'src/rotate_entrance.dart';
 export 'src/scale_entrance.dart';
 export 'src/scale_toggle.dart';

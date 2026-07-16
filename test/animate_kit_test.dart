@@ -1361,6 +1361,172 @@ void main() {
     });
   });
 
+  group('AnimatedCheckmark', () {
+    testWidgets('renders a CustomPaint', (tester) async {
+      await tester.pumpWidget(_wrap(const AnimatedCheckmark(checked: true)));
+      await tester.pumpAndSettle();
+      expect(
+        find.descendant(
+          of: find.byType(AnimatedCheckmark),
+          matching: find.byType(CustomPaint),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('toggling checked animates the stroke', (tester) async {
+      bool checked = false;
+      late StateSetter setState;
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (context, s) {
+            setState = s;
+            return _wrap(AnimatedCheckmark(checked: checked));
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+      setState(() => checked = true);
+      await tester.pump();
+      expect(tester.hasRunningAnimations, isTrue);
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('snaps and runs no ticker when reduce-motion enabled', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(const AnimatedCheckmark(checked: true), disableAnimations: true),
+      );
+      await tester.pump();
+      expect(tester.hasRunningAnimations, isFalse);
+    });
+
+    testWidgets('asserts on invalid configuration', (tester) async {
+      expect(
+        () => AnimatedCheckmark(checked: true, size: 0.0),
+        throwsAssertionError,
+      );
+      expect(
+        () => AnimatedCheckmark(checked: true, strokeWidth: 0.0),
+        throwsAssertionError,
+      );
+    });
+  });
+
+  group('RollingCounter', () {
+    testWidgets('renders the current value', (tester) async {
+      await tester.pumpWidget(_wrap(const RollingCounter(value: 42)));
+      await tester.pumpAndSettle();
+      expect(find.text('4'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
+    });
+
+    testWidgets('rolls to a new value', (tester) async {
+      int value = 9;
+      late StateSetter setState;
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (context, s) {
+            setState = s;
+            return _wrap(RollingCounter(value: value));
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('9'), findsOneWidget);
+      setState(() => value = 10);
+      await tester.pump();
+      await tester.pumpAndSettle();
+      expect(find.text('1'), findsOneWidget);
+      expect(find.text('0'), findsOneWidget);
+      expect(find.text('9'), findsNothing);
+    });
+
+    testWidgets('shows plain text when reduce-motion enabled', (tester) async {
+      await tester.pumpWidget(
+        _wrap(const RollingCounter(value: 123), disableAnimations: true),
+      );
+      expect(find.text('123'), findsOneWidget);
+      expect(tester.hasRunningAnimations, isFalse);
+    });
+
+    testWidgets('custom formatter is applied', (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          RollingCounter(value: 1234, formatter: (v) => '1,234'),
+          disableAnimations: true,
+        ),
+      );
+      expect(find.text('1,234'), findsOneWidget);
+    });
+
+    testWidgets('semantics announce the whole number', (tester) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(_wrap(const RollingCounter(value: 42)));
+      await tester.pumpAndSettle();
+      expect(find.bySemanticsLabel('42'), findsOneWidget);
+      handle.dispose();
+    });
+  });
+
+  group('Marquee', () {
+    testWidgets('renders static text when it fits', (tester) async {
+      await tester.pumpWidget(
+        _wrap(const SizedBox(width: 400, child: Marquee(text: 'short'))),
+      );
+      await tester.pump();
+      expect(find.text('short'), findsOneWidget);
+      expect(tester.hasRunningAnimations, isFalse);
+    });
+
+    testWidgets('scrolls with two copies when text overflows', (tester) async {
+      const longText = 'An extremely long track title that cannot possibly fit';
+      await tester.pumpWidget(
+        _wrap(const SizedBox(width: 100, child: Marquee(text: longText))),
+      );
+      await tester.pump();
+      expect(tester.hasRunningAnimations, isTrue);
+      // Seamless loop renders the text twice.
+      expect(find.text(longText), findsNWidgets(2));
+      await tester.pump(const Duration(seconds: 2));
+    });
+
+    testWidgets('static ellipsized text when reduce-motion enabled', (
+      tester,
+    ) async {
+      const longText = 'An extremely long track title that cannot possibly fit';
+      await tester.pumpWidget(
+        _wrap(
+          const SizedBox(width: 100, child: Marquee(text: longText)),
+          disableAnimations: true,
+        ),
+      );
+      await tester.pump();
+      expect(find.text(longText), findsOneWidget);
+      expect(tester.hasRunningAnimations, isFalse);
+    });
+
+    testWidgets('semantics announce the full text when scrolling', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      const longText = 'An extremely long track title that cannot possibly fit';
+      await tester.pumpWidget(
+        _wrap(const SizedBox(width: 100, child: Marquee(text: longText))),
+      );
+      await tester.pump();
+      expect(find.bySemanticsLabel(longText), findsOneWidget);
+      await tester.pump(const Duration(seconds: 2));
+      handle.dispose();
+    });
+
+    testWidgets('asserts on invalid configuration', (tester) async {
+      expect(() => Marquee(text: 'x', velocity: 0.0), throwsAssertionError);
+      expect(() => Marquee(text: 'x', gap: 0.0), throwsAssertionError);
+    });
+  });
+
   group('BlurEntrance', () {
     testWidgets('renders child', (tester) async {
       await tester.pumpWidget(_wrap(const BlurEntrance(child: Text('hi'))));

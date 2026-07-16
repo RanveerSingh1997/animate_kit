@@ -19,6 +19,7 @@ class FadeSwitcher extends StatelessWidget {
     required this.child,
     this.duration = const Duration(milliseconds: 250),
     this.initialScale = 0.95,
+    this.curve = Curves.easeOut,
     super.key,
   }) : assert(initialScale > 0.0 && initialScale <= 1.0);
 
@@ -30,6 +31,9 @@ class FadeSwitcher extends StatelessWidget {
   /// Scale the incoming child starts at. Set to `1.0` for a pure cross-fade.
   final double initialScale;
 
+  /// Easing of the incoming child (the outgoing child uses [Curves.easeIn]).
+  final Curve curve;
+
   @override
   Widget build(BuildContext context) {
     final resolvedDuration = MediaQuery.disableAnimationsOf(context)
@@ -37,7 +41,7 @@ class FadeSwitcher extends StatelessWidget {
         : duration;
     return AnimatedSwitcher(
       duration: resolvedDuration,
-      switchInCurve: Curves.easeOut,
+      switchInCurve: curve,
       switchOutCurve: Curves.easeIn,
       transitionBuilder: (child, animation) => FadeTransition(
         opacity: animation,
